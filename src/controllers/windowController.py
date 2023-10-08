@@ -9,17 +9,20 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
     def __init__(self, machine : Machine, parent : pcDesigntaller.Ui_MainWindow = None):
         super().__init__(parent)
         self.machine = machine
+        machine.addWindow(self)
         self.setupUi(self)
         self.updateStateMachine()
 
     #Actualiza el estado de la máquina que se muestra con la máquina emulada
     def updateStateMachine(self):
-        [self.table_ram.setItem(i, 0, QTableWidgetItem(self.machine.table_ram[i])) for i in range(0, 1024)]
-        [self.table_registros.setItem(i, 0, QTableWidgetItem(self.machine.table_registros[i][0])) for i in range(0, 4)]
-        [self.table_registros.setItem(i, 1, QTableWidgetItem(str(self.machine.table_registros[i][1]))) for i in range(0, 4)]
-        [self.table_alu.setItem(i, 0, QTableWidgetItem(self.machine.table_alu[i][0])) for i in range(0, 4)] 
-        [self.table_alu.setItem(i, 1, QTableWidgetItem(str(self.machine.table_alu[i][1]))) for i in range(0, 4)]
-        [self.table_unidad_control.setItem(i, 0, QTableWidgetItem(self.machine.table_unidad_control[i])) for i in range(0, 2)]
+        for window in self.machine.windows:
+            [window.table_ram.setItem(i, 0, QTableWidgetItem(window.machine.table_ram[i])) for i in range(0, 1024)]
+            [window.table_registros.setItem(i, 0, QTableWidgetItem(window.machine.table_registros[i][0])) for i in range(0, 4)]
+            [window.table_registros.setItem(i, 1, QTableWidgetItem(str(window.machine.table_registros[i][1]))) for i in range(0, 4)]
+            [window.table_alu.setItem(i, 0, QTableWidgetItem(window.machine.table_alu[i][0])) for i in range(0, 4)] 
+            [window.table_alu.setItem(i, 1, QTableWidgetItem(str(window.machine.table_alu[i][1]))) for i in range(0, 4)]
+            [window.table_unidad_control.setItem(i, 0, QTableWidgetItem(window.machine.table_unidad_control[i])) for i in range(0, 2)]
+        
 
     def initializeAllInCeros(self):
         self.machine.initializeAllInCeros()

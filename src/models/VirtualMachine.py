@@ -5,9 +5,10 @@ from src.models.Assembler import Assembler
 class Machine:
 
     def __init__(self, code, instrucciones_asm, instruccion_actual, instruccion_siguiente):
+        self.windows = []
+        self.assembler = Assembler()
         self.code = code
         self.instrucciones_asm = instrucciones_asm
-        self.assembler = Assembler()
         self.instruccion_actual = instruccion_actual
         self.instruccion_siguiente = instruccion_siguiente
         self.table_ram = ['0000000000000000' for i in range(0, 1024)]
@@ -16,6 +17,9 @@ class Machine:
         self.table_unidad_control = ['00' for i in range(0, 2)]
         self.initializeAllInCeros()
         self.registros = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    
+    def addWindow(self, window):
+        self.windows.append(window)
 
     def initializeAllInCeros(self):
         for i in range(0, 1024):
