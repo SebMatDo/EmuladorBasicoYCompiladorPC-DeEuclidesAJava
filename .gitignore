@@ -1,2 +1,4 @@
 /emuenv
 /__pycache__
+/build
+/dist
