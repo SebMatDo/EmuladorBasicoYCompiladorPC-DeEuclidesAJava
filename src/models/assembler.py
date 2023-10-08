@@ -1,6 +1,6 @@
 import re
 from PyQt5.QtWidgets import QTableWidgetItem
-from src.funtions.convertions import decimalToBinary
+from src.utils.convertions import decimalToBinary
 
 class Assembler:
     """Assembler for custom assembly code

@@ -1,7 +1,7 @@
 import src.views.pcDesigntaller as pcDesigntaller
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
-from src.funtions.convertions import decimalToBinary
+from src.utils.convertions import decimalToBinary
 from src.models.assembler import Assembler
 
 
