@@ -9,3 +9,10 @@ En linux(debian) puede instalar un entorno de python para correr el programa cor
     source emuenv/bin/activate
     pip install -r requirements.txt
 ```
+
+Para editar la interfaz gráfica se recomienda tener instalado pyqt5 designer:
+
+```Shell
+    sudo apt install pyqt5-dev-tools
+    sudo apt install qttools5-dev-tools
+```
