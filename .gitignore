@@ -1,0 +1,7 @@
+/emuenv
+/__pycache__
+/build
+/dist
+*.spec
+/.idea
+/*/*/__pycache__
