@@ -12,6 +12,7 @@ class Machine:
         self.instruccion_actual = instruccion_actual
         self.instruccion_siguiente = instruccion_siguiente
         self.table_ram = ['0000000000000000' for i in range(0, 1024)]
+        self.object_code = ['0000000000000000' for i in range(0, 1024)]
         self.table_registros = [['0000000000000000','0'] for i in range(0, 4)]
         self.table_alu = [['00', '0'] for i in range(0, 4)]
         self.table_unidad_control = ['00' for i in range(0, 2)]
@@ -24,6 +25,7 @@ class Machine:
     def initializeAllInCeros(self):
         for i in range(0, 1024):
             self.table_ram[i] = '0000000000000000'
+            self.object_code[i] = '0000000000000000'
         for i in range(0, 4):
             self.table_registros[i][0] = '0000000000000000'
             self.table_registros[i][1] = '0'
@@ -158,7 +160,7 @@ class Machine:
         self.table_unidad_control[0] = self.instruccion_actual_ram
 
         # actualiza la siguiente instruccion a correr
-        self.table_unidad_control[1] = decimalToBinary(self.instruccion_siguiente)
+        self.table_unidad_control[1] = str(self.instruccion_siguiente)
 
         if self.instruccion_siguiente < len(self.instrucciones_asm):
             print('Instrucción siguiente: ', self.instrucciones_asm[self.instruccion_siguiente], 'linea: ', self.instruccion_siguiente)

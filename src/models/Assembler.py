@@ -122,7 +122,7 @@ class Assembler:
                     registro = values[0]
                     variable = values[1]
                     binario = self.opcodes['Cargar'] + self.registros[registro] + decimalToBinary(relocVariables[variable])
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Cargar',registro,relocVariables[variable]]
 
                 case 'CargarValor':
@@ -130,50 +130,47 @@ class Assembler:
                     registro = values[0]
                     valor = values[1]
                     binario = self.opcodes['CargarValor'] + self.registros[registro] + decimalToBinary(int(valor))
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['CargarValor', registro, int(valor)]
 
                 case 'Almacenar':
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = self.opcodes['Almacenar'] + self.registros[registro] + decimalToBinary(
-                        relocVariables[variable])
-                    virtualMachine.table_ram[linea] = binario
+                    binario = self.opcodes['Almacenar'] + self.registros[registro] + decimalToBinary(relocVariables[variable])
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Almacenar', registro, relocVariables[variable]]
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    binario = self.opcodes['SaltarSiCero'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
+                    print(value)
+                    print(labels)
+                    binario = self.opcodes['SaltarSiCero'] + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['SaltarSiCero', labels[value]]
 
                 case 'SaltarSiNeg':
                     value = statement.group().replace('SaltarSiNeg', '')
-                    binario = self.opcodes['SaltarSiNeg']  + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
+                    binario = self.opcodes['SaltarSiNeg']  + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['SaltarSiNeg', labels[value]]
 
                 case 'SaltarSiPos':
                     value = statement.group().replace('SaltarSiPos', '')
-                    binario = self.opcodes['SaltarSiPos'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
+                    binario = self.opcodes['SaltarSiPos'] + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['SaltarSiPos', labels[value]]
 
                 case 'SaltarSiDes':
                     value = statement.group().replace('SaltarSiDes', '')
-                    binario = self.opcodes['SaltarSiDes'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
+                    binario = self.opcodes['SaltarSiDes'] + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['SaltarSiDes', labels[value]]
 
                 case 'Saltar':
                     value = statement.group().replace('Saltar', '')
-                    binario = self.opcodes['Saltar'] + decimalToBinary(labels[value])
-                    virtualMachine.table_ram[linea] = binario
+                    binario = self.opcodes['Saltar'] + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Saltar', labels[value]]
 
                 case 'Copiar':
@@ -181,7 +178,7 @@ class Assembler:
                     registro1 = values[0]
                     registro2 = values[1]
                     binario = self.opcodes['Copiar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Copiar', registro1, registro2]
 
                 case 'Sumar':
@@ -189,7 +186,7 @@ class Assembler:
                     registro1 = values[0]
                     registro2 = values[1]
                     binario = self.opcodes['Sumar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Sumar', registro1, registro2]
 
                 case 'Restar':
@@ -197,7 +194,7 @@ class Assembler:
                     registro1 = values[0]
                     registro2 = values[1]
                     binario = self.opcodes['Restar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Restar', registro1, registro2]
 
                 case 'Mult':
@@ -205,7 +202,7 @@ class Assembler:
                     registro1 = values[0]
                     registro2 = values[1]
                     binario = self.opcodes['Mult'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Mult', registro1, registro2]
 
                 case 'Div':
@@ -213,12 +210,12 @@ class Assembler:
                     registro1 = values[0]
                     registro2 = values[1]
                     binario = self.opcodes['Div'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Div', registro1, registro2]
 
                 case 'Parar':
                     binario = self.opcodes['Parar']
-                    virtualMachine.table_ram[linea] = binario
+                    virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['Parar']
 
             linea += 1

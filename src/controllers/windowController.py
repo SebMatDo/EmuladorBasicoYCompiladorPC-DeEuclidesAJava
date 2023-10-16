@@ -22,7 +22,9 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
             [window.table_alu.setItem(i, 0, QTableWidgetItem(window.machine.table_alu[i][0])) for i in range(0, 4)] 
             [window.table_alu.setItem(i, 1, QTableWidgetItem(str(window.machine.table_alu[i][1]))) for i in range(0, 4)]
             [window.table_unidad_control.setItem(i, 0, QTableWidgetItem(window.machine.table_unidad_control[i])) for i in range(0, 2)]
-        
+            object_code = "".join([window.machine.object_code[i]+"\n" for i in range(0, 1024)])
+            window.textEditCodigoObjeto.setText(object_code)
+
 
     def initializeAllInCeros(self):
         self.machine.initializeAllInCeros()
