@@ -4,4 +4,5 @@
 /dist
 *.spec
 /.idea
+.idea
 /*/*/__pycache__
