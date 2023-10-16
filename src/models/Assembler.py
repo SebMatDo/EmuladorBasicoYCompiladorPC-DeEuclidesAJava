@@ -143,8 +143,6 @@ class Assembler:
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    print(value)
-                    print(labels)
                     binario = self.opcodes['SaltarSiCero'] + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     virtualMachine.instrucciones_asm[linea] = ['SaltarSiCero', labels[value]]
