@@ -1607,6 +1607,9 @@ p, li { white-space: pre-wrap; }
       <height>31</height>
      </rect>
     </property>
+    <property name="maximum">
+     <number>1024</number>
+    </property>
    </widget>
    <widget class="QTextEdit" name="textEditCodigoObjeto">
     <property name="geometry">

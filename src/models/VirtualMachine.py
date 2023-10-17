@@ -1,5 +1,6 @@
 from src.utils.convertions import decimalToBinary
 from src.models.Assembler import Assembler
+from src.models.LinkerLoader import LinkerLoader
 
 
 class Machine:
@@ -7,6 +8,7 @@ class Machine:
     def __init__(self, code, instrucciones_asm, instruccion_actual, instruccion_siguiente):
         self.windows = []
         self.assembler = Assembler()
+        self.likerLoader= LinkerLoader()
         self.code = code
         self.instrucciones_asm = instrucciones_asm
         self.instruccion_actual = instruccion_actual
@@ -178,3 +180,6 @@ class Machine:
     def ensamblar(self, textEditCodigoASM):
         self.code = textEditCodigoASM
         self.assembler.compile(self)
+
+    def enlazar_cargar(self, startPoint):
+        self.likerLoader.linkLoad(self, startPoint)

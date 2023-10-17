@@ -192,6 +192,7 @@ class Ui_MainWindow(object):
         self.button_enlazar_cargar.setObjectName("button_enlazar_cargar")
         self.spinBox_pos_enlazar = QtWidgets.QSpinBox(self.centralwidget)
         self.spinBox_pos_enlazar.setGeometry(QtCore.QRect(770, 50, 91, 31))
+        self.spinBox_pos_enlazar.setMaximum(1024)
         self.spinBox_pos_enlazar.setObjectName("spinBox_pos_enlazar")
         self.textEditCodigoObjeto = QtWidgets.QTextEdit(self.centralwidget)
         self.textEditCodigoObjeto.setGeometry(QtCore.QRect(750, 90, 261, 621))

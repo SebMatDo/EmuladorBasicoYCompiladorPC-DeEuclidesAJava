@@ -22,8 +22,8 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
             [window.table_alu.setItem(i, 0, QTableWidgetItem(window.machine.table_alu[i][0])) for i in range(0, 4)] 
             [window.table_alu.setItem(i, 1, QTableWidgetItem(str(window.machine.table_alu[i][1]))) for i in range(0, 4)]
             [window.table_unidad_control.setItem(i, 0, QTableWidgetItem(window.machine.table_unidad_control[i])) for i in range(0, 2)]
-            object_code = "".join([window.machine.object_code[i]+"\n" for i in range(0, 1024)])
-            window.textEditCodigoObjeto.setText(object_code)
+            window.textEditCodigoObjeto.setText("".join([window.machine.object_code[i]+"\n" for i in range(0, 1024)]))
+            window.table_ram.selectRow(window.machine.instruccion_actual) if window.machine.instruccion_actual > 0 else 0
 
 
     def initializeAllInCeros(self):
@@ -52,4 +52,10 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_button_ensamblar_clicked(self):
         self.machine.ensamblar(self.textEditCodigoASM.toPlainText())
+        self.updateStateMachine()
+
+    @QtCore.pyqtSlot()
+    def on_button_enlazar_cargar_clicked(self):
+        for window in self.machine.windows:
+            self.machine.enlazar_cargar(window.spinBox_pos_enlazar.value())
         self.updateStateMachine()
