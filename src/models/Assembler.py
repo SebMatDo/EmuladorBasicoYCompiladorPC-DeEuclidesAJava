@@ -1,4 +1,5 @@
 import re
+from src.utils.convertions import decimalToBinary
 
 class Assembler:
     """Assembler for custom assembly code
@@ -97,80 +98,78 @@ class Assembler:
                     values = statement.group().replace('Cargar','').split(',')
                     registro = values[0]
                     variable = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Cargar'+ '}' + '{'+registro+ '}' + '{' +str(relocVariables[variable])+ '}'
-                    
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Cargar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
 
                 case 'CargarValor':
                     values = statement.group().replace('CargarValor', '').split(',')
                     registro = values[0]
                     valor = values[1]
-                    virtualMachine.object_code[linea] = '{' +'CargarValor'+ '}' + '{'+registro+ '}' + '{' +valor+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['CargarValor'] + virtualMachine.registers[registro] + decimalToBinary(int(valor))
                     
-
                 case 'Almacenar':
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Almacenar'+ '}' + '{'+registro+ '}' + '{' +str(relocVariables[variable])+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Almacenar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
                     
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    virtualMachine.object_code[linea] = '{' +'SaltarSiCero'+ '}' + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiCero'] + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiNeg':
                     value = statement.group().replace('SaltarSiNeg', '')
-                    virtualMachine.object_code[linea] = '{' +'SaltarSiNeg'+ '}'  + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiNeg'] + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiPos':
                     value = statement.group().replace('SaltarSiPos', '')
-                    virtualMachine.object_code[linea] = '{' +'SaltarSiPos'+ '}' + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiPos'] + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiDes':
                     value = statement.group().replace('SaltarSiDes', '')
-                    virtualMachine.object_code[linea] = '{' +'SaltarSiDes'+ '}' + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiDes'] + "{" +str(labels[value]) + "}"
                     
                 case 'Saltar':
                     value = statement.group().replace('Saltar', '')
-                    virtualMachine.object_code[linea] = '{' +'Saltar'+ '}' + "{" +str(labels[value]) + "}"
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Saltar'] + "{" +str(labels[value]) + "}"
                     
                 case 'Copiar':
                     values = statement.group().replace('Copiar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Copiar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Copiar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Sumar':
                     values = statement.group().replace('Sumar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Sumar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Sumar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Restar':
                     values = statement.group().replace('Restar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Restar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Restar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Mult':
                     values = statement.group().replace('Mult', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Mult'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Mult'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Div':
                     values = statement.group().replace('Div', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = '{' +'Div'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
+                    virtualMachine.object_code[linea] = 'Div' + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Parar':
-                    virtualMachine.object_code[linea] = '{' +'Parar'+ '}'
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Parar']
                     
             linea += 1
 
