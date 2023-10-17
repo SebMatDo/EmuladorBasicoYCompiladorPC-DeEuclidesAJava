@@ -121,7 +121,7 @@ class Assembler:
                     values = statement.group().replace('Cargar','').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = self.opcodes['Cargar'] + self.registros[registro] + decimalToBinary(relocVariables[variable])
+                    binario = '{' +'Cargar'+ '}' + '{'+registro+ '}' + decimalToBinary(relocVariables[variable])
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -129,7 +129,7 @@ class Assembler:
                     values = statement.group().replace('CargarValor', '').split(',')
                     registro = values[0]
                     valor = values[1]
-                    binario = self.opcodes['CargarValor'] + self.registros[registro] + decimalToBinary(int(valor))
+                    binario = '{' +'CargarValor'+ '}' + '{'+registro+ '}' + decimalToBinary(int(valor))
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -137,40 +137,40 @@ class Assembler:
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = self.opcodes['Almacenar'] + self.registros[registro] + decimalToBinary(relocVariables[variable])
+                    binario = '{' +'Almacenar'+ '}' + '{'+registro+ '}' + decimalToBinary(relocVariables[variable])
                     virtualMachine.object_code[linea] = binario
                     
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    binario = self.opcodes['SaltarSiCero'] + "{" +str(labels[value]) + "}"
+                    binario = '{' +'SaltarSiCero'+ '}' + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     
                 case 'SaltarSiNeg':
                     value = statement.group().replace('SaltarSiNeg', '')
-                    binario = self.opcodes['SaltarSiNeg']  + "{" +str(labels[value]) + "}"
+                    binario = '{' +'SaltarSiNeg'+ '}'  + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     
                 case 'SaltarSiPos':
                     value = statement.group().replace('SaltarSiPos', '')
-                    binario = self.opcodes['SaltarSiPos'] + "{" +str(labels[value]) + "}"
+                    binario = '{' +'SaltarSiPos'+ '}' + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     
                 case 'SaltarSiDes':
                     value = statement.group().replace('SaltarSiDes', '')
-                    binario = self.opcodes['SaltarSiDes'] + "{" +str(labels[value]) + "}"
+                    binario = '{' +'SaltarSiDes'+ '}' + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     
                 case 'Saltar':
                     value = statement.group().replace('Saltar', '')
-                    binario = self.opcodes['Saltar'] + "{" +str(labels[value]) + "}"
+                    binario = '{' +'Saltar'+ '}' + "{" +str(labels[value]) + "}"
                     virtualMachine.object_code[linea] = binario
                     
                 case 'Copiar':
                     values = statement.group().replace('Copiar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Copiar'] + self.registros[registro1] + self.registros[registro2]
+                    binario = '{' +'Copiar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -178,7 +178,7 @@ class Assembler:
                     values = statement.group().replace('Sumar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Sumar'] + self.registros[registro1] + self.registros[registro2]
+                    binario = '{' +'Sumar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -186,7 +186,7 @@ class Assembler:
                     values = statement.group().replace('Restar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Restar'] + self.registros[registro1] + self.registros[registro2]
+                    binario = '{' +'Restar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -194,7 +194,7 @@ class Assembler:
                     values = statement.group().replace('Mult', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Mult'] + self.registros[registro1] + self.registros[registro2]
+                    binario = '{' +'Mult'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     virtualMachine.object_code[linea] = binario
                     
 
@@ -202,12 +202,12 @@ class Assembler:
                     values = statement.group().replace('Div', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Div'] + self.registros[registro1] + self.registros[registro2]
+                    binario = '{' +'Div'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     virtualMachine.object_code[linea] = binario
                     
 
                 case 'Parar':
-                    binario = self.opcodes['Parar']
+                    binario = '{' +'Parar'+ '}'
                     virtualMachine.object_code[linea] = binario
                     
             linea += 1
