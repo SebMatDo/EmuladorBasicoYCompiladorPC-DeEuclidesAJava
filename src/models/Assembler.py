@@ -1,34 +1,10 @@
 import re
-from src.utils.convertions import decimalToBinary
 
 class Assembler:
     """Assembler for custom assembly code
     """
 
     def __init__(self):
-        # Define opcodes
-        self.opcodes = {
-            'Parar': '0000000000000000',
-            'Cargar': '0001',
-            'CargarValor': '0010',
-            'Almacenar': '0011',
-            'SaltarSiCero': '010000',
-            'SaltarSiNeg': '010001',
-            'SaltarSiPos': '010010',
-            'SaltarSiDes': '010011',
-            'Saltar': '010100',
-            'Copiar': '011000000000',
-            'Sumar': '011000000001',
-            'Restar': '011000000010',
-            'Mult': '011000000011',
-            'Div': '011000000100'
-        }
-        self.registros = {
-            'A': '00',
-            'B': '01',
-            'C': '10',
-            'D': '11'
-        }
         self.basic_regular_expresion = {
             'variable': '\w+',
             'label': '\w+:',
@@ -105,7 +81,7 @@ class Assembler:
 
         for variable in relocVariables:
             linea += 1
-            relocVariables[variable] = linea # les digo en que posicion de la ram pueden quedar las variables todo convertir a binario
+            (relocVariables[variable]) = linea # les digo en que posicion de la ram pueden quedar las variables todo convertir a binario
 
         linea = 0
 
@@ -121,94 +97,80 @@ class Assembler:
                     values = statement.group().replace('Cargar','').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = '{' +'Cargar'+ '}' + '{'+registro+ '}' + decimalToBinary(relocVariables[variable])
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Cargar'+ '}' + '{'+registro+ '}' + '{' +str(relocVariables[variable])+ '}'
                     
 
                 case 'CargarValor':
                     values = statement.group().replace('CargarValor', '').split(',')
                     registro = values[0]
                     valor = values[1]
-                    binario = '{' +'CargarValor'+ '}' + '{'+registro+ '}' + decimalToBinary(int(valor))
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'CargarValor'+ '}' + '{'+registro+ '}' + '{' +valor+ '}'
                     
 
                 case 'Almacenar':
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = '{' +'Almacenar'+ '}' + '{'+registro+ '}' + decimalToBinary(relocVariables[variable])
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Almacenar'+ '}' + '{'+registro+ '}' + '{' +str(relocVariables[variable])+ '}'
                     
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    binario = '{' +'SaltarSiCero'+ '}' + "{" +str(labels[value]) + "}"
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'SaltarSiCero'+ '}' + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiNeg':
                     value = statement.group().replace('SaltarSiNeg', '')
-                    binario = '{' +'SaltarSiNeg'+ '}'  + "{" +str(labels[value]) + "}"
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'SaltarSiNeg'+ '}'  + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiPos':
                     value = statement.group().replace('SaltarSiPos', '')
-                    binario = '{' +'SaltarSiPos'+ '}' + "{" +str(labels[value]) + "}"
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'SaltarSiPos'+ '}' + "{" +str(labels[value]) + "}"
                     
                 case 'SaltarSiDes':
                     value = statement.group().replace('SaltarSiDes', '')
-                    binario = '{' +'SaltarSiDes'+ '}' + "{" +str(labels[value]) + "}"
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'SaltarSiDes'+ '}' + "{" +str(labels[value]) + "}"
                     
                 case 'Saltar':
                     value = statement.group().replace('Saltar', '')
-                    binario = '{' +'Saltar'+ '}' + "{" +str(labels[value]) + "}"
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Saltar'+ '}' + "{" +str(labels[value]) + "}"
                     
                 case 'Copiar':
                     values = statement.group().replace('Copiar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = '{' +'Copiar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Copiar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     
 
                 case 'Sumar':
                     values = statement.group().replace('Sumar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = '{' +'Sumar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Sumar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     
 
                 case 'Restar':
                     values = statement.group().replace('Restar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = '{' +'Restar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Restar'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     
 
                 case 'Mult':
                     values = statement.group().replace('Mult', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = '{' +'Mult'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Mult'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     
 
                 case 'Div':
                     values = statement.group().replace('Div', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = '{' +'Div'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Div'+ '}' + '{'+registro1+ '}' + '{'+registro2+ '}'
                     
 
                 case 'Parar':
-                    binario = '{' +'Parar'+ '}'
-                    virtualMachine.object_code[linea] = binario
+                    virtualMachine.object_code[linea] = '{' +'Parar'+ '}'
                     
             linea += 1
 
