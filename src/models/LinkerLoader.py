@@ -38,12 +38,18 @@ class LinkerLoader:
     def linkLoad(self, virtualMachine, startPoint):
         self.startPoint = startPoint
         self.virtualMachine = virtualMachine
+        self.virtualMachine.instruccion_actual = startPoint
+        self.virtualMachine.instruccion_siguiente = startPoint
 
         for i in range(startPoint,len(virtualMachine.object_code)):
             row = virtualMachine.object_code[i-startPoint]
             matches = re.findall(self.spetialGeneral, row)
             if matches:
-                virtualMachine.instrucciones_asm[i] = [int(i) if i.isdigit() else i for i in matches]
+                jumps = ['SaltarSiCero','SaltarSiNeg','SaltarSiPos','SaltarSiDes','Saltar']
+                virtualMachine.instrucciones_asm[i] = [int(j) if j.isdigit() else j for j in matches]
+                if virtualMachine.instrucciones_asm[i][0] in jumps:
+                    virtualMachine.instrucciones_asm[i][1]+=startPoint
+                
 
             alocatedValue = re.sub(self.spetialNums, self.matchBinary, row)
             alocatedValue = re.sub(self.spetialVars, self.matchLabels, alocatedValue)
