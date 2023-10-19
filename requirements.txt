@@ -1,2 +1,3 @@
+ply
 PyQt5
 pyqt5-tools
