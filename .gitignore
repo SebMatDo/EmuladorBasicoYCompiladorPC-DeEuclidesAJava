@@ -4,4 +4,7 @@
 /dist
 *.spec
 /.idea
+.idea
+/.vscode
+.vscode
 /*/*/__pycache__

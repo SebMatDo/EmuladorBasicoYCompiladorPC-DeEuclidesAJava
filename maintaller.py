@@ -9,12 +9,10 @@ code = ''
 instrucciones_asm = {}
 
 # Inicializar la máquina
-machine = Machine(code, instrucciones_asm, instruccion_actual, instruccion_siguiente)
+machine = Machine(code, instruccion_actual, instruccion_siguiente)
 
 # Inicializar la aplicación
 app = QApplication(sys.argv)
 window = Window(machine)
-window1 = Window(machine)
 window.show()
-window1.show()
 sys.exit(app.exec())

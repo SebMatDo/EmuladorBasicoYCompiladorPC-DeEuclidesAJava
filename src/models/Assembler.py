@@ -6,29 +6,6 @@ class Assembler:
     """
 
     def __init__(self):
-        # Define opcodes
-        self.opcodes = {
-            'Parar': '0000000000000000',
-            'Cargar': '0001',
-            'CargarValor': '0010',
-            'Almacenar': '0011',
-            'SaltarSiCero': '010000',
-            'SaltarSiNeg': '010001',
-            'SaltarSiPos': '010010',
-            'SaltarSiDes': '010011',
-            'Saltar': '010100',
-            'Copiar': '011000000000',
-            'Sumar': '011000000001',
-            'Restar': '011000000010',
-            'Mult': '011000000011',
-            'Div': '011000000100'
-        }
-        self.registros = {
-            'A': '00',
-            'B': '01',
-            'C': '10',
-            'D': '11'
-        }
         self.basic_regular_expresion = {
             'variable': '\w+',
             'label': '\w+:',
@@ -105,7 +82,7 @@ class Assembler:
 
         for variable in relocVariables:
             linea += 1
-            relocVariables[variable] = linea # les digo en que posicion de la ram pueden quedar las variables todo convertir a binario
+            (relocVariables[variable]) = linea # les digo en que posicion de la ram pueden quedar las variables todo convertir a binario
 
         linea = 0
 
@@ -121,106 +98,79 @@ class Assembler:
                     values = statement.group().replace('Cargar','').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = self.opcodes['Cargar'] + self.registros[registro] + decimalToBinary(relocVariables[variable])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Cargar',registro,relocVariables[variable]]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Cargar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
 
                 case 'CargarValor':
                     values = statement.group().replace('CargarValor', '').split(',')
                     registro = values[0]
                     valor = values[1]
-                    binario = self.opcodes['CargarValor'] + self.registros[registro] + decimalToBinary(int(valor))
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['CargarValor', registro, int(valor)]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['CargarValor'] + virtualMachine.registers[registro] + decimalToBinary(int(valor))
+                    
                 case 'Almacenar':
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    binario = self.opcodes['Almacenar'] + self.registros[registro] + decimalToBinary(
-                        relocVariables[variable])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Almacenar', registro, relocVariables[variable]]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Almacenar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
+                    
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')
-                    binario = self.opcodes['SaltarSiCero'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['SaltarSiCero', labels[value]]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiCero'] + "{" +str(labels[value]) + "}"
+                    
                 case 'SaltarSiNeg':
                     value = statement.group().replace('SaltarSiNeg', '')
-                    binario = self.opcodes['SaltarSiNeg']  + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['SaltarSiNeg', labels[value]]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiNeg'] + "{" +str(labels[value]) + "}"
+                    
                 case 'SaltarSiPos':
                     value = statement.group().replace('SaltarSiPos', '')
-                    binario = self.opcodes['SaltarSiPos'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['SaltarSiPos', labels[value]]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiPos'] + "{" +str(labels[value]) + "}"
+                    
                 case 'SaltarSiDes':
                     value = statement.group().replace('SaltarSiDes', '')
-                    binario = self.opcodes['SaltarSiDes'] + decimalToBinary(
-                        labels[value])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['SaltarSiDes', labels[value]]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['SaltarSiDes'] + "{" +str(labels[value]) + "}"
+                    
                 case 'Saltar':
                     value = statement.group().replace('Saltar', '')
-                    binario = self.opcodes['Saltar'] + decimalToBinary(labels[value])
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Saltar', labels[value]]
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Saltar'] + "{" +str(labels[value]) + "}"
+                    
                 case 'Copiar':
                     values = statement.group().replace('Copiar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Copiar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Copiar', registro1, registro2]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Copiar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    
 
                 case 'Sumar':
                     values = statement.group().replace('Sumar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Sumar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Sumar', registro1, registro2]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Sumar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    
 
                 case 'Restar':
                     values = statement.group().replace('Restar', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Restar'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Restar', registro1, registro2]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Restar'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    
 
                 case 'Mult':
                     values = statement.group().replace('Mult', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Mult'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Mult', registro1, registro2]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Mult'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    
 
                 case 'Div':
                     values = statement.group().replace('Div', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    binario = self.opcodes['Div'] + self.registros[registro1] + self.registros[registro2]
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Div', registro1, registro2]
+                    virtualMachine.object_code[linea] = 'Div' + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    
 
                 case 'Parar':
-                    binario = self.opcodes['Parar']
-                    virtualMachine.table_ram[linea] = binario
-                    virtualMachine.instrucciones_asm[linea] = ['Parar']
-
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Parar']
+                    
             linea += 1
 
     def handle_int(self, integer):
