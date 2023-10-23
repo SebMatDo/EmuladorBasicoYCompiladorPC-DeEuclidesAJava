@@ -1,6 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 import ply.lex as lex
+from pathlib import Path
+import os
 # import ply.yacc as yacc
 
 lookUpTable = {}
@@ -16,36 +18,47 @@ tokens = (
     'EQ', # Equals
     'PARAMS', # Params
     'ID', # Identifiers
-    'MAXIMIZE', # Maximize
-    'MINIMIZE', # Minimize
-    'SUBJECT', # Subject
-    'TO', # To
+    'FUN',
     'VAR', # Variables
+    'MIENTRAS',
+    'FMIENTRAS',
+    'CASO',
+    'HACER',
+    'DEV',
+    'FFUN',
+    'MOD',
     'COMMA', # Comma
-    'SEMICOLON' # Semicolon
+    'SEMICOLON', # Semicolon
+    'COLON'
 )
 
 # Regular definition of tokens
 
 reserved = {
-    'maximize' : 'MAXIMIZE',
-    'minimize' : 'MINIMIZE',
-    'subject' : 'SUBJECT',
-    'to' : 'TO',
+    'fun' : 'FUN',
     'var' : 'VAR',
-    'params' : 'PARAMS'
+    'mientras' : 'MIENTRAS',
+    'fmientras' : 'FMIENTRAS',
+    'caso' : 'CASO',
+    'hacer' : 'HACER',
+    'dev' : 'DEV',
+    'ffun' : 'FFUN',
+    'mod' : 'MOD'
 }
 
 digit = r'[0-9]'
 letter = r'[a-zA-Z]'
 
 # Regular expression rules for simple tokens
-t_MAXIMIZE = r'maximize'
-t_MINIMIZE = r'minimize'
-t_SUBJECT  = r'subject'
-t_TO       = r'to'
-t_VAR      = r'var'
-t_PARAMS   = r'params'
+t_FUN = r'fun'
+t_VAR = r'var'
+t_MIENTRAS = r'mientras'
+t_FMIENTRAS = r'fmientras'
+t_CASO = r'caso'
+t_HACER = r'hacer'
+t_DEV = r'dev'
+t_FFUN = r'ffun'
+t_MOD = r'mod'
 t_PLUS    = r'\+'
 t_MINUS   = r'-'
 t_TIMES   = r'\*'
@@ -57,6 +70,7 @@ t_GEQ     = r'>='
 t_GREATER = r'>'
 t_LESS    = r'<'
 t_EQ      = r'='
+t_COLON  = r':'
 t_COMMA   = r','
 t_SEMICOLON = r';'
 
@@ -74,7 +88,7 @@ def t_ID(t):
         t.type = reserved[ t.value ]
         return t
     if t.value not in lookUpTable:
-        lookUpTable[t.value] = {'isParam': False, 'isVar': False, 'currentValue': 0}    
+        lookUpTable[t.value] = {'currentValue': 0}
     t.value = (t.value, lookUpTable[t.value])
     return t
 
@@ -88,12 +102,17 @@ def t_error(t):
     print(f"Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
 
+
 # Build the lexer
 lexer = lex.lex()
 
-
+#def test_lexer():
 # Test it out
-data = open('tests/lexer/source_code.lp','r').read()
+data_folder = Path(os.getcwd())
+file_path = data_folder.parent.parent / "tests/lexer/codigoLibro.lp"
+print(file_path)
+data = open(file_path,'r').read()
+
 
 # Give the lexer some input
 lexer.input(data)
