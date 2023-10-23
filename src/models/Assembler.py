@@ -165,7 +165,7 @@ class Assembler:
                     values = statement.group().replace('Div', '').split(',')
                     registro1 = values[0]
                     registro2 = values[1]
-                    virtualMachine.object_code[linea] = 'Div' + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Div'] + virtualMachine.registers[registro1] + virtualMachine.registers[registro2]
                     
 
                 case 'Parar':
