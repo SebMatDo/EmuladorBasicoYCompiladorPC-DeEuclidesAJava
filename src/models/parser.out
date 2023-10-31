@@ -1,0 +1,140 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    ASSIGN
+    BOOLEANO
+    CASO
+    COMMA
+    DECIMAL
+    DEV
+    DIVIDE
+    ENTONCES
+    EQUAL
+    FALSO
+    FFUN
+    FMIENTRAS
+    FUN
+    GEQ
+    GREATER
+    HACER
+    LEQ
+    LESS
+    LPAREN
+    MIENTRAS
+    MINUS
+    MOD
+    NOTEQ
+    NUMBER
+    O
+    PARAMS
+    PLUS
+    RPAREN
+    SI
+    SINO
+    TIMES
+    VERDADERO
+    Y
+
+Grammar
+
+Rule 0     S' -> type_assignment
+Rule 1     type_assignment -> VAR ID COLON ENTERO SEMICOLON
+
+Terminals, with rules where they appear
+
+ASSIGN               : 
+BOOLEANO             : 
+CASO                 : 
+COLON                : 1
+COMMA                : 
+DECIMAL              : 
+DEV                  : 
+DIVIDE               : 
+ENTERO               : 1
+ENTONCES             : 
+EQUAL                : 
+FALSO                : 
+FFUN                 : 
+FMIENTRAS            : 
+FUN                  : 
+GEQ                  : 
+GREATER              : 
+HACER                : 
+ID                   : 1
+LEQ                  : 
+LESS                 : 
+LPAREN               : 
+MIENTRAS             : 
+MINUS                : 
+MOD                  : 
+NOTEQ                : 
+NUMBER               : 
+O                    : 
+PARAMS               : 
+PLUS                 : 
+RPAREN               : 
+SEMICOLON            : 1
+SI                   : 
+SINO                 : 
+TIMES                : 
+VAR                  : 1
+VERDADERO            : 
+Y                    : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+type_assignment      : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . type_assignment
+    (1) type_assignment -> . VAR ID COLON ENTERO SEMICOLON
+
+    VAR             shift and go to state 2
+
+    type_assignment                shift and go to state 1
+
+state 1
+
+    (0) S' -> type_assignment .
+
+
+
+state 2
+
+    (1) type_assignment -> VAR . ID COLON ENTERO SEMICOLON
+
+    ID              shift and go to state 3
+
+
+state 3
+
+    (1) type_assignment -> VAR ID . COLON ENTERO SEMICOLON
+
+    COLON           shift and go to state 4
+
+
+state 4
+
+    (1) type_assignment -> VAR ID COLON . ENTERO SEMICOLON
+
+    ENTERO          shift and go to state 5
+
+
+state 5
+
+    (1) type_assignment -> VAR ID COLON ENTERO . SEMICOLON
+
+    SEMICOLON       shift and go to state 6
+
+
+state 6
+
+    (1) type_assignment -> VAR ID COLON ENTERO SEMICOLON .
+
+    $end            reduce using rule 1 (type_assignment -> VAR ID COLON ENTERO SEMICOLON .)
+
