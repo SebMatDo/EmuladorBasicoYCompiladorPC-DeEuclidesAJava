@@ -42,6 +42,8 @@ class MyLexer():
         'ENTERO',
         'BOOLEANO',
         'DECIMAL',
+        'CADENA',
+        'ARREGLO',
         'O',
         'Y',
         'SI',
@@ -68,6 +70,8 @@ class MyLexer():
         'entero': 'ENTERO',
         'bool': 'BOOLEANO',
         'decimal': 'DECIMAL',
+        'cadena' : 'CADENA',
+        'arreglo' : 'ARREGLO',
         'o': '||',
         'y': '&&',
         'si': 'SI',
@@ -115,6 +119,8 @@ class MyLexer():
     t_BOOLEANO = r'bool'
     t_ENTERO = r'entero'
     t_DECIMAL = r'decimal'
+    t_CADENA = r'cadena'
+    t_ARREGLO = r'arreglo'
 
     # A regular expression rule with some action code
 

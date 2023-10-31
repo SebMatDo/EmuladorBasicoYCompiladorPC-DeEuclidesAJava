@@ -18,13 +18,18 @@ class MyParser:
 
     # GRAMMAR START
     def p_type_assignment(self, p):
-        'type_assignment : VAR ID COLON ENTERO SEMICOLON'
-        print("PARSER: expression recognized", p)
+        'type_assignment : VAR ID COLON type SEMICOLON'
+        print("PARSER: se encontró una asignacion de tipo", p)
 
-    # def p_function_header(self,p):
-    #     'function_header : FUN ID LPAREN RPAREN DEV LPAREN RPAREN'
-    #
-    #     print('PARSER: fun header recognized', p)
+    def p_type(self,p):
+        '''
+        type : ENTERO
+        | BOOLEANO
+        | DECIMAL
+        | CADENA
+        | ARREGLO
+        '''
+        print('PARSER: Se encontró un tipo', p)
 
     def p_error(self,p):
         if p:
