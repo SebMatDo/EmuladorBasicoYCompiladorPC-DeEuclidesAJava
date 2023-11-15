@@ -24,7 +24,6 @@ data = open(file_path,'r').read()
 # construir lexer y probarlo
 myLex = MyLexer()
 myLex.build() # Build the lexer
-myLex.test(data)
 
 myPars = MyParser(myLex)
 myPars.test(data)

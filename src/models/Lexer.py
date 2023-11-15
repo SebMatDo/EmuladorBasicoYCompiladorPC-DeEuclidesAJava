@@ -19,13 +19,13 @@ class MyLexer():
 
     # Terminales
     tokens = (
-        'NUMBER',
-        'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
+        'NUMERO',
+        'SUMA', 'RESTA', 'MULT', 'DIV',
         'LPAREN', 'RPAREN',
         'LEQ', 'GEQ',  # Less than or equal, Greater than or equal
-        'GREATER', 'LESS',  # Greater than, Less than
-        'EQUAL',  # Equals
-        'PARAMS',  # Params
+        'MAYOR', 'MENOR',  # Greater than, Less than
+        'IGUAL',  # Equals
+        'PARAMETROS',  # Params
         'ID',  # Identifiers
         'FUN',
         'VAR',  # Variables
@@ -36,23 +36,26 @@ class MyLexer():
         'DEV',
         'FFUN',
         'MOD',
-        'COMMA',  # Comma
-        'SEMICOLON',  # Semicolon
+        'COMA',  # Comma
+        'PCOMA',  # Semicolon
         'COLON',
         'ENTERO',
         'BOOLEANO',
         'DECIMAL',
         'CADENA',
-        'ARREGLO',
         'O',
         'Y',
         'SI',
         'ENTONCES',
         'SINO',
-        'ASSIGN',
-        'NOTEQ',
+        'ASIGNAR',
+        'DIFERENTE',
         'VERDADERO',
         'FALSO',
+        'NULO',
+        'NEGAR',
+        'LCORCHETE',
+        'RCORCHETE',
     )
 
     # palabras reservadas
@@ -71,14 +74,13 @@ class MyLexer():
         'bool': 'BOOLEANO',
         'decimal': 'DECIMAL',
         'cadena' : 'CADENA',
-        'arreglo' : 'ARREGLO',
-        'o': '||',
-        'y': '&&',
         'si': 'SI',
         'entonces': 'ENTONCES',
         'sino': 'SINO',
         'verdadero': 'VERDADERO',
         'falso': 'FALSO',
+        'nulo' : 'NULO',
+        'negar' : 'NEGAR',
     }
 
     # Regular definition of tokens
@@ -96,36 +98,41 @@ class MyLexer():
     t_DEV = r'dev'
     t_FFUN = r'ffun'
     t_MOD = r'mod'
-    t_PLUS = r'\+'
-    t_MINUS = r'-'
-    t_TIMES = r'\*'
-    t_DIVIDE = r'/'
+    t_SUMA = r'\+'
+    t_RESTA = r'-'
+    t_MULT = r'\*'
+    t_DIV = r'/'
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_LEQ = r'<='
     t_GEQ = r'>='
-    t_GREATER = r'>'
-    t_LESS = r'<'
-    t_EQUAL = r'='
-    t_NOTEQ = r'!='
-    t_ASSIGN = r'=='
+    t_MAYOR = r'>'
+    t_MENOR = r'<'
+    t_IGUAL = r'=='
+    t_DIFERENTE = r'!='
+    t_ASIGNAR = r'='
     t_COLON = r':'
-    t_COMMA = r','
-    t_SEMICOLON = r';'
+    t_COMA = r','
+    t_PCOMA = r';'
     t_ignore = ' \t'
     ID = r'[a-zA-Z_][a-zA-Z_0-9]*'
-    NUMBER = r'\d+(\.\d+)?'
+    NUMERO = r'\d+(\.\d+)?'
     t_ignore_COMMENT = r'\#\#.*'
     t_BOOLEANO = r'bool'
     t_ENTERO = r'entero'
     t_DECIMAL = r'decimal'
     t_CADENA = r'cadena'
-    t_ARREGLO = r'arreglo'
+    t_NULO = r'nulo'
+    t_NEGAR = r'!'
+    t_Y = r'&&'
+    t_O = r'\|\|'
+    t_LCORCHETE = r'{'
+    r_RCORCHETE = r'}'
 
     # A regular expression rule with some action code
 
-    @lex.TOKEN(NUMBER)
-    def t_NUMBER(self, t):
+    @lex.TOKEN(NUMERO)
+    def t_NUMERO(self, t):
         t.value = float(t.value)
         return t
 
