@@ -9,6 +9,7 @@ class MyParser:
         print("Parser constructor called")
         self.parser = yacc.yacc(module=self)
         self.lexer = lexer
+        self.lookUpTable = {}
 
     # DESTRUCTOR
     def __del__(self):
@@ -20,20 +21,38 @@ class MyParser:
         ('nonassoc', 'MENOR', 'MAYOR'),  # Nonassociative
         ('left', 'SUMA', 'RESTA'),
         ('left', 'MULT', 'DIV'),
+        ('left', 'POTENCIA'),
         #('right', 'UMINUS'),  # Unary minus operator
     )
     # GRAMMAR START
 
     def p_algoritmo(self,p):
-        # algoritmo regex inicial para reconocer el resto puede ser cualquier cantidad de funciones o ninguna pero si o si una o mas proposiciones
-        # la idea es poder llamar esa funcion por fuera para hacer un salto
-        # algoritmo ::= fun_senten* proposicion+
+        # algoritmo regex inicial que comienza la recursion para reconocer una cantidad arbitraria de proposiciones
+
+        # algoritmo ::= FUN proposicion+ FFUN
         '''
-        algoritmo : fun_sentencias proposicion proposiciones
-        | proposicion proposiciones
-        fun_sentencias : fun_senten fun_sentencias
-        | fun_senten
+        algoritmo : FUN proposicion proposiciones FFUN
         '''
+        print('Parser: se identifica un algoritmo completo exitoso')
+
+    def p_empty(self,p):
+        # funcion para poder tener un lambda en el resto de producciones
+        'empty :'
+        pass
+
+    def p_proposicion(self,p):
+        # todo casos (match), hacer_mientras (funciona mal) para (for)
+        '''
+        proposicion : asignacion PCOMA
+        | inicializar_variable PCOMA
+        | sentencia_si PCOMA
+        | sentencia_mientras PCOMA
+        | sentencia_hacer_mientras PCOMA
+        | sentencia_leer PCOMA
+        | sentencia_escribir PCOMA
+
+        '''
+        # print('Parser: se identifica una proposicion', p)
 
     def p_proposiciones(self,p):
         # proposiciones ::= proposicion*
@@ -41,35 +60,104 @@ class MyParser:
         proposiciones : proposicion proposiciones
         | empty
         '''
-
-    def p_proposicion(self,p):
-        # proposicion ::= DEV expresion | si_senten | mientras_senten | asignacion PCOMA
-        '''
-        proposicion : DEV expresion
-        | asignacion PCOMA
-        | inicializar_variable PCOMA
-        '''
-
-    def p_sec_proposiciones(self,p):
-        # sec_proposiciones ::= proposicion+
-        '''
-        sec_proposiciones : proposicion sec_proposiciones
-        | proposicion
-        '''
+        # print('Parser: se identifica unas proposiciones', p)
 
     def p_asignacion(self,p):
-        # asignacion ::= ID ASIGNAR expresion
+        # asignacion ::= ID ASIGNAR ( ID | exp_aritmetica | exp_booleana | NULO | VALOR_CADENA )
         '''
-        asignacion : ID ASIGNAR expresion
+        asignacion : ID ASIGNAR ID
+        | ID ASIGNAR exp_aritmetica
+        | ID ASIGNAR exp_booleana
+        | ID ASIGNAR NULO
+        | ID ASIGNAR VALOR_CADENA
         '''
 
+        # Si intenta usar una variable no inicializada
+        if self.lookUpTable.get(p[1]) is None:
+            print('ERROR: Variable no inicializada siendo asignada', p[1])
+        else:
+            # todo verificacion de tipos
+            print('Parser: se identifica una asignacion', p[1:])
 
-    def p_suma_resta(self,p):
-        # suma_resta ::= SUMA | RESTA
+
+    def p_tipos(self,p):
+        # tipos ::= ENTERO | BOOLEANO | DECIMAL | CADENA
         '''
-        suma_resta : SUMA
+        tipos : ENTERO
+        | BOOLEANO
+        | DECIMAL
+        | CADENA
+        '''
+        p[0] = p[1]
+
+    def p_inicializar_variable(self,p):
+        # inicializar_variable ::= VAR ID COLON tipos
+        '''
+        inicializar_variable : VAR ID COLON tipos
+        '''
+        print('PARSER: se inicializa variable ', p[2:])
+        p[0] = 'inicializacion_variable'
+        # Se guarda la variable en un diccionario haciendo referencia a su tipo
+        self.lookUpTable[p[2]] = p[4]
+
+
+####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
+
+    def p_operador_aritmetico(self, p):
+        # operador_aritmetico ::= MULT | DIV | SUMA | RESTA | POTENCIA
+        '''
+        operador_aritmetico : MULT
+        | DIV
+        | SUMA
         | RESTA
+        | POTENCIA
         '''
+
+        # devuelve el tipo de operacion
+        p[0] = p[1]
+
+    def p_factor_aritmetico(self, p):
+        # factor_aritmetico ::=  '(' exp_aritmetica ')' | NUM_ENTERO | NUM_DECIMAL
+        # factor_aritmetico_id ::= factor_aritmetico | ID
+        '''
+        factor_aritmetico : LPAREN exp_aritmetica RPAREN
+        | NUM_ENTERO
+        | NUM_DECIMAL
+        factor_aritmetico_id : factor_aritmetico
+        | ID
+        '''
+
+
+    def p_operaciones_aritmeticas(self, p):
+        # operaciones_aritmeticas ::= (operador_aritmetico factor_aritmetico)*
+        # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
+        '''
+        operaciones_aritmeticas : operador_aritmetico factor_aritmetico operaciones_aritmeticas
+        | empty
+        operaciones_aritmeticas_id : operador_aritmetico factor_aritmetico_id operaciones_aritmeticas_id
+        | operador_aritmetico factor_aritmetico_id
+        '''
+
+    def p_termino_aritmetico(self, p):
+        # termino_aritmetico ::= factor_aritmetico ( operaciones_aritmeticas | operaciones_aritmeticas_id )
+        # | ID operaciones_aritmeticas_id
+        '''
+        termino_aritmetico : factor_aritmetico operaciones_aritmeticas
+        | ID operaciones_aritmeticas_id
+        | factor_aritmetico operaciones_aritmeticas_id
+        '''
+
+
+    def p_exp_arimetica(self, p):
+        # exp_aritmetica ::= termino_aritmetico ( operador_aritmetico termino_aritmetico )*
+        '''
+        exp_aritmetica : termino_aritmetico
+        | termino_aritmetico operador_aritmetico exp_aritmetica
+        '''
+        #print("Parser exp arit: ",p[0-4])
+
+
+    ####################### APARADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
     def p_operador_relacional(self,p):
         # operador_relacional ::= IGUAL | DIFERENTE | LEQ | GEQ | MENOR | MAYOR
@@ -81,154 +169,108 @@ class MyParser:
         | MENOR
         | MAYOR
         '''
+        # print('Parser: se identifica un op relacional ', p)
 
-    def p_tipos(self,p):
-        # tipos ::= ENTERO | BOOLEANO | DECIMAL | CADENA
+    def p_factor_relacional(self, p):
+        #factor_relacional ::= '(' factor_relacional ')' | ( exp_aritmetica | ID ) operador_relacional ( exp_aritmetica | ID )
         '''
-        tipos : ENTERO
-        | BOOLEANO
-        | DECIMAL
-        | CADENA
+        factor_relacional : LPAREN factor_relacional RPAREN
+        | exp_aritmetica operador_relacional exp_aritmetica
+        | ID operador_relacional exp_aritmetica
+        | exp_aritmetica operador_relacional ID
+        | ID operador_relacional ID
         '''
-        print('PARSER: Se encontró un tipo', p)
 
-    def p_operador_terminal(self,p):
-        # operador_terminal ::= (operaciones factor)*
-        # operaciones ::= MULT | DIV | MOD | Y | O
+
+    ####################### APARADO PARA RECONOCER EXPRESIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
+
+    def p_operador_booleano(self, p):
+        # operador_booleano ::= IGUAL | DIFERENTE | Y | O
         '''
-        operador_terminal : operaciones factor operador_terminal
-        | empty
-        operaciones : MULT
-        | DIV
-        | MOD
+        operador_booleano : IGUAL
+        | DIFERENTE
         | Y
         | O
         '''
 
-
-    def p_termino(self,p):
-        # termino ::= '(' termino ')' | '!' termino | factor | factor operador_terminal
+    def p_factor_booleano(self, p):
+        # factor_booleano ::= NEGAR* ( '(' exp_booleana ')' | VERDADERO | FALSO | factor_relacional )
+        # factor_booleano_id ::= factor_booleano | NEGAR? ID
         '''
-        termino : LPAREN termino RPAREN
-        | factor
-        | NEGAR termino
-        | factor operador_terminal
-        '''
-
-
-    def p_terminos(self,p):
-        # terminos ::= (('+' | '-')? termino) *
-        '''
-        terminos : suma_resta termino terminos
-        | termino terminos
-        | empty
-        '''
-
-    def p_exp_simple(self,p):
-        # '(' exp_simple ')' | ('+' | '-') termino terminos | termino terminos | termino
-        '''
-        exp_simple : LPAREN exp_simple RPAREN
-        | suma_resta termino terminos
-        | termino terminos
-        | termino
-        '''
-
-    def p_expresion(self, p):
-        # ::= '(' expresion ')' | exp_simple ( operador_relacional exp_simple )?
-        # | '!' expresion
-        '''
-        expresion : LPAREN expresion RPAREN
-        | exp_simple operador_relacional exp_simple
-        | exp_simple
-        | NEGAR expresion
-        '''
-
-    def p_expresiones(self,p):
-        # expresiones ::= ( COMA expresion )*
-        '''
-        expresiones : COMA expresion expresiones
-        | empty
-        '''
-
-    def p_conjunto(self,p):
-        # conjunto ::= expresion ( COMA expresion )*
-        '''
-        conjunto : expresion
-        | expresion expresiones
-        '''
-
-    def p_factor(self,p):
-        # ::= DIFERENTE* ( ENTERO | CADENA | NULO | ID | VERDADERO | FALSO | LPAREN expresion RPAREN | conjunto )
-        # el diferente factor ahi da problemas de tipo !!!!!!!!entero
-        '''
-        factor : ENTERO
-        | CADENA
-        | NULO
-        | ID
-        | DIFERENTE factor
+        factor_booleano : LPAREN exp_booleana RPAREN
         | VERDADERO
         | FALSO
-        | LPAREN expresion RPAREN
-        | conjunto
+        | factor_relacional
+        | NEGAR factor_booleano
+        factor_booleano_id : factor_booleano
+        | ID
+        | NEGAR ID
         '''
 
-
-    def p_bloque(self, p):
-        # bloque   ::= LCORCHETE proposicion* RCORCHETE
+    def p_operaciones_booleanas(self, p):
+        # operaciones_boolenas ::= ( operador_booleano factor_booleano )*
+        # operaciones_booleanas_id ::= ( operador_booleano factor_booleano_id )*
         '''
-        bloque : sec_proposiciones
+        operaciones_booleanas : operador_booleano factor_booleano operaciones_booleanas
+        | empty
+        operaciones_booleanas_id : operador_booleano factor_booleano_id operaciones_booleanas_id
         | empty
         '''
 
-    def p_def_funcion(self,p):
-        # def_funcion ::= FUN ID LPAREN asignar_tipos RPAREN ( DEV LPAREN asignar_tipos RPAREN )?
+    def p_termino_booleano(self, p):
+        # termino_booleano ::= factor_booleano operaciones_booleanas
+        # | ( ID operador_booleano factor_booleano_id | NEGAR ID ) operaciones_booleanas_id
         '''
-        def_funcion : FUN ID LPAREN asignar_tipos RPAREN
-        | FUN ID LPAREN asignar_tipos RPAREN DEV LPAREN asignar_tipos RPAREN
-        '''
-        print('Parser: Se encontró una def_funcion', p)
-
-    def p_fun_senten(self,p):
-        # fun_senten ::= def_funcion bloque FFUN
-        '''
-        fun_senten : def_funcion bloque FFUN
+        termino_booleano : factor_booleano operaciones_booleanas
+        | ID operador_booleano factor_booleano_id operaciones_booleanas_id
+        | NEGAR ID operaciones_booleanas_id
         '''
 
-    def p_asignar_tipos(self, p):
-        # Asigna un tipo a una o mas variables
-        # asignar_tipos ::= ID COLON tipos ( COMA ID COLON tipos )*
+    def p_exp_booleana(self, p):
+        # exp_booleana ::= termino_booleano ( operador_booleano termino_booleano )*
         '''
-        asignar_tipos : ID COLON tipos coma_asignar_tipos
-        coma_asignar_tipos : COMA ID COLON tipos coma_asignar_tipos
-        | empty
+        exp_booleana : termino_booleano
+        | termino_booleano operador_booleano exp_booleana
         '''
-        print("PARSER: se encontró una o más asignacion de tipo", p)
+        #print('Parser: exp booleana', p)
 
-    def p_inicializar_variable(self,p):
-        #
-        '''
-        inicializar_variable : VAR ID COLON tipos
-        '''
-        print('PARSER: se inicializa variable ',p)
+    ###################### SENTENCIAS ###########################
 
-    def p_lista_ids(self,p):
-        # lista_ids ::= LPAREN ID ( COMA ID )* RPAREN
+    def p_sentencia_si(self, p):
+        # sentencia_si ::= SI exp_booleana ENTONCES proposicion proposiciones ( SINO proposicion proposiciones )?
         '''
-        lista_ids : LPAREN ID coma_ids RPAREN
-        coma_ids : COMA ID coma_ids
-        | empty
+        sentencia_si : SI exp_booleana ENTONCES proposicion proposiciones FSI
+        | SI exp_booleana ENTONCES proposicion proposiciones SINO proposicion proposiciones FSI
         '''
-        print("PARSER: se encontró una asignacion de tipo list ids", p)
 
+    def p_sentencia_mientras(self, p):
+        # sentencia_mientras ::= MIENTRAS exp_booleana HACER proposicion proposiciones FMIENTRAS
+        '''
+        sentencia_mientras : MIENTRAS exp_booleana HACER proposicion proposiciones FMIENTRAS
+        '''
 
-    def p_empty(self,p):
-        # funcion para poder tener un lambda
-        'empty :'
-        pass
+    def p_sentencia_hacer_mientras(self, p):
+        # sentencia_hacer_mientras ::= HACER proposicion proposiciones MIENTRAS exp_booleana
+        '''
+        sentencia_hacer_mientras : HACER proposicion proposiciones MIENTRAS exp_booleana
+        '''
+
+    def p_sentencia_leer(self, p):
+        # sentencia_leer ::= LEER '(' ID ')'
+        '''
+        sentencia_leer : LEER LPAREN ID RPAREN
+        '''
+
+    def p_sentencia_escribir(self, p):
+        # sentencia_escribir ::= ESCRIBIR '(' ID ')'
+        '''
+        sentencia_escribir :  ESCRIBIR LPAREN ID RPAREN
+        '''
+
 
     def p_error(self,p):
         if p:
-            print("Syntax error at token", p.type, ' y ',p)
+            print("Syntax error at token", p.type, ' y ', p)
             # Just discard the token and tell the parser it's okay.
             self.parser.errok()
         else:
@@ -238,5 +280,5 @@ class MyParser:
         self.parser = yacc.yacc(module=self, **kwargs)
 
     def test(self, data):
-        result = self.parser.parse(data)
-        print(result)
+        self.parser.parse(data)
+        print(self.lookUpTable)

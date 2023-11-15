@@ -19,13 +19,14 @@ class MyLexer():
 
     # Terminales
     tokens = (
-        'NUMERO',
+        'NUM_DECIMAL',
+        'NUM_ENTERO',
+        'VALOR_CADENA',
         'SUMA', 'RESTA', 'MULT', 'DIV',
         'LPAREN', 'RPAREN',
         'LEQ', 'GEQ',  # Less than or equal, Greater than or equal
         'MAYOR', 'MENOR',  # Greater than, Less than
         'IGUAL',  # Equals
-        'PARAMETROS',  # Params
         'ID',  # Identifiers
         'FUN',
         'VAR',  # Variables
@@ -33,10 +34,8 @@ class MyLexer():
         'FMIENTRAS',
         'CASO',
         'HACER',
-        'DEV',
         'FFUN',
         'MOD',
-        'COMA',  # Comma
         'PCOMA',  # Semicolon
         'COLON',
         'ENTERO',
@@ -54,8 +53,10 @@ class MyLexer():
         'FALSO',
         'NULO',
         'NEGAR',
-        'LCORCHETE',
-        'RCORCHETE',
+        'POTENCIA',
+        'LEER',
+        'ESCRIBIR',
+        'FSI',
     )
 
     # palabras reservadas
@@ -66,7 +67,6 @@ class MyLexer():
         'fmientras': 'FMIENTRAS',
         'caso': 'CASO',
         'hacer': 'HACER',
-        'dev': 'DEV',
         'ffun': 'FFUN',
         'mod': 'MOD',
         'var': 'VAR',
@@ -81,6 +81,9 @@ class MyLexer():
         'falso': 'FALSO',
         'nulo' : 'NULO',
         'negar' : 'NEGAR',
+        'leer' : 'LEER',
+        'escribir' : 'ESCRIBIR',
+        'fsi' : 'FSI',
     }
 
     # Regular definition of tokens
@@ -95,7 +98,6 @@ class MyLexer():
     t_FMIENTRAS = r'fmientras'
     t_CASO = r'caso'
     t_HACER = r'hacer'
-    t_DEV = r'dev'
     t_FFUN = r'ffun'
     t_MOD = r'mod'
     t_SUMA = r'\+'
@@ -112,11 +114,12 @@ class MyLexer():
     t_DIFERENTE = r'!='
     t_ASIGNAR = r'='
     t_COLON = r':'
-    t_COMA = r','
     t_PCOMA = r';'
     t_ignore = ' \t'
     ID = r'[a-zA-Z_][a-zA-Z_0-9]*'
-    NUMERO = r'\d+(\.\d+)?'
+    NUM_DECIMAL = r'\-?\d+(\.\d+)'
+    NUM_ENTERO = r'\-?\d+'
+    VALOR_CADENA = r'".+" | \'.+\' '
     t_ignore_COMMENT = r'\#\#.*'
     t_BOOLEANO = r'bool'
     t_ENTERO = r'entero'
@@ -126,14 +129,37 @@ class MyLexer():
     t_NEGAR = r'!'
     t_Y = r'&&'
     t_O = r'\|\|'
-    t_LCORCHETE = r'{'
-    r_RCORCHETE = r'}'
+    t_POTENCIA = r'\^'
+    VERDADERO = r'verdadero'
+    FALSO = r'falso'
+    t_LEER = r'leer'
+    t_ESCRIBIR = r'escribir'
+    t_FSI = r'fsi'
 
     # A regular expression rule with some action code
+    @lex.TOKEN(VERDADERO)
+    def t_VERDADERO(self, t):
+        t.value = True
+        return t
 
-    @lex.TOKEN(NUMERO)
-    def t_NUMERO(self, t):
+    @lex.TOKEN(FALSO)
+    def t_FALSO(self, t):
+        t.value = False
+        return t
+
+    @lex.TOKEN(NUM_DECIMAL)
+    def t_NUM_DECIMAL(self, t):
         t.value = float(t.value)
+        return t
+
+    @lex.TOKEN(NUM_ENTERO)
+    def t_NUM_ENTERO(self, t):
+        t.value = int(t.value)
+        return t
+
+    @lex.TOKEN(VALOR_CADENA)
+    def t_VALOR_CADENA(self, t):
+        t.value = str(t.value)
         return t
 
     @lex.TOKEN(ID)
@@ -142,8 +168,8 @@ class MyLexer():
             t.type = self.reserved[t.value]
             return t
         if t.value not in self.lookUpTable:
-            self.lookUpTable[t.value] = {'currentValue': 0}
-        t.value = (t.value, self.lookUpTable[t.value])
+            # añadirlo a la tabla si no existe
+            self.lookUpTable[t.value] = True
         return t
 
     # Define a rule so we can track line numbers
