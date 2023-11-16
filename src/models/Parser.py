@@ -10,6 +10,8 @@ class MyParser:
         self.parser = yacc.yacc(module=self)
         self.lexer = lexer
         self.lookUpTable = {}
+        self.resultAsm = ''
+        self.countVar = 0
 
     # DESTRUCTOR
     def __del__(self):
@@ -38,6 +40,7 @@ class MyParser:
     def p_empty(self,p):
         # funcion para poder tener un lambda en el resto de producciones
         'empty :'
+        p[0] = ''
         pass
 
     def p_proposicion(self,p):
@@ -53,6 +56,8 @@ class MyParser:
 
         '''
         # print('Parser: se identifica una proposicion', p)
+        p[0] = p[1]
+        self.resultAsm += p[1]
 
     def p_proposiciones(self,p):
         # proposiciones ::= proposicion*
@@ -60,7 +65,8 @@ class MyParser:
         proposiciones : proposicion proposiciones
         | empty
         '''
-        # print('Parser: se identifica unas proposiciones', p)
+        print('Parser: se identifica unas proposiciones', p[0:])
+
 
     def p_asignacion(self,p):
         # asignacion ::= ID ASIGNAR ( ID | exp_aritmetica | exp_booleana | NULO | VALOR_CADENA )
@@ -73,11 +79,16 @@ class MyParser:
         '''
 
         # Si intenta usar una variable no inicializada
+        pseudoAsm = ''
         if self.lookUpTable.get(p[1]) is None:
             print('ERROR: Variable no inicializada siendo asignada', p[1])
         else:
             # todo verificacion de tipos
-            print('Parser: se identifica una asignacion', p[1:])
+            pseudoAsm += p[3]
+            pseudoAsm += 'Almacenar A,' + str(self.lookUpTable[p[1]][1]) + '\n' #se almacena la variable en la ram. usando el lookup para obtener su numero especifico
+            p[0] = pseudoAsm
+            print('Parser: se identifica una asignacion\n', p[0])
+
 
 
     def p_tipos(self,p):
@@ -96,9 +107,18 @@ class MyParser:
         inicializar_variable : VAR ID COLON tipos
         '''
         print('PARSER: se inicializa variable ', p[2:])
-        p[0] = 'inicializacion_variable'
-        # Se guarda la variable en un diccionario haciendo referencia a su tipo
-        self.lookUpTable[p[2]] = p[4]
+        p[0] = 'inicializacion_variable\n'
+        # mientras haya menos de 10 variables
+        if self.countVar <= 10:
+            # Se guarda la variable en un diccionario haciendo referencia a su tipo y su numero de variable
+            # si es una nueva var la cuenta, si no, la reemplaza
+            if self.lookUpTable.get(p[2]) is None:
+                self.lookUpTable[p[2]] = [p[4], self.countVar]
+                self.countVar += 1
+            else:
+                self.lookUpTable[p[2]][0] = p[4]
+        else:
+            print('ERROR NO SE PUEDEN DEFINIR MÁS DE 10 VARIABLES')
 
 
 ####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
@@ -126,17 +146,65 @@ class MyParser:
         factor_aritmetico_id : factor_aritmetico
         | ID
         '''
+        # devuelve el valor del factor, p[2] si es un exparitmetico entre parentesis y p[1] de resto
+        if len(p) == 3:
+            p[0] = p[2]
+        else:
+            p[0] = p[1]
 
 
     def p_operaciones_aritmeticas(self, p):
         # operaciones_aritmeticas ::= (operador_aritmetico factor_aritmetico)*
-        # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
         '''
         operaciones_aritmeticas : operador_aritmetico factor_aritmetico operaciones_aritmeticas
         | empty
+        '''
+
+        # esto permite que p[0] mantenga la recursion
+        pseudoAsm = ''
+        if len(p) == 4:
+            if p[3] != '':
+                pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+                if p[1] == '+':
+                    pseudoAsm += 'Sumar A,B\n'
+                pseudoAsm += p[3]
+                p[0] = pseudoAsm
+            else:
+                pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+                if p[1] == '+':
+                    pseudoAsm += 'Sumar A,B\n'
+                p[0] = pseudoAsm
+        else:
+            p[0] = ''
+        print('ops aritmeticas: ', p[0:])
+
+
+    def p_operaciones_aritmeticas_id(self, p):
+        # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
+        '''
         operaciones_aritmeticas_id : operador_aritmetico factor_aritmetico_id operaciones_aritmeticas_id
         | operador_aritmetico factor_aritmetico_id
         '''
+        # esto permite que p[0] mantenga la recursion
+        # aca puede haber IDS o numeros normales.
+        pseudoAsm = ''
+        isVar = self.lookUpTable.get(p[2]) is not None
+        if isVar:
+            numVar = str(self.lookUpTable[p[2]][1])
+        asmToAdd = ''
+        if len(p) == 4:  # con recursion
+            if p[3] != '':
+                asmToAdd = p[3]
+        if isVar:
+            pseudoAsm += 'Cargar B,' + numVar + '\n'
+        else:
+            pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+        if p[1] == '+':
+            pseudoAsm += 'Sumar A,B\n'
+        pseudoAsm += asmToAdd
+        p[0] = pseudoAsm
+
+        print('ops aritmeticas con id: ', p[0:])
 
     def p_termino_aritmetico(self, p):
         # termino_aritmetico ::= factor_aritmetico ( operaciones_aritmeticas | operaciones_aritmeticas_id )
@@ -147,6 +215,23 @@ class MyParser:
         | factor_aritmetico operaciones_aritmeticas_id
         '''
 
+        pseudoAsm = ''
+        asmToAdd = ''
+        if p[2] != '':
+            asmToAdd = p[2]
+        if self.lookUpTable.get(p[1]) is None:  #  si p[1] no es id entonces lo carga en A
+            pseudoAsm += 'CargarValor A,' + p[1] + '\n'
+            pseudoAsm += p[2]
+        else: # si es ID lo carga desde la ram
+            pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+            pseudoAsm += asmToAdd
+
+        p[0] = pseudoAsm
+        print('terminos aritmeticos: ', p[0:])
+
+        # acá ya termina la recursión y por lo tanto puedo hacer pseudoasm
+
+
 
     def p_exp_arimetica(self, p):
         # exp_aritmetica ::= termino_aritmetico ( operador_aritmetico termino_aritmetico )*
@@ -154,8 +239,15 @@ class MyParser:
         exp_aritmetica : termino_aritmetico
         | termino_aritmetico operador_aritmetico exp_aritmetica
         '''
-        #print("Parser exp arit: ",p[0-4])
+        # si len = 2 entonces es un solo termino si no entonces son muchos terminos
+        if len(p) == 2:
+            p[0] = p[1]
+        elif len(p) == 4:
+            p[0] = p[1] + p[2] + p[3]
+        # todo creo que aca va la conversion a asm por parte de las ops aritmeticas
+        # supongo yo, haciendo que cargue a registro el primero que encuentre, haga la operacion con el siguiente operador y asi sucesivamente
 
+        print("Parser exp arit: ",p[0:])
 
     ####################### APARADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -282,3 +374,4 @@ class MyParser:
     def test(self, data):
         self.parser.parse(data)
         print(self.lookUpTable)
+        print(self.resultAsm)

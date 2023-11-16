@@ -139,22 +139,22 @@ class MyLexer():
     # A regular expression rule with some action code
     @lex.TOKEN(VERDADERO)
     def t_VERDADERO(self, t):
-        t.value = True
+        #t.value = True
         return t
 
     @lex.TOKEN(FALSO)
     def t_FALSO(self, t):
-        t.value = False
+        #t.value = False
         return t
 
     @lex.TOKEN(NUM_DECIMAL)
     def t_NUM_DECIMAL(self, t):
-        t.value = float(t.value)
+        #t.value = float(t.value)
         return t
 
     @lex.TOKEN(NUM_ENTERO)
     def t_NUM_ENTERO(self, t):
-        t.value = int(t.value)
+        #t.value = int(t.value)
         return t
 
     @lex.TOKEN(VALOR_CADENA)

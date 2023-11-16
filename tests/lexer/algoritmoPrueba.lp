@@ -2,11 +2,10 @@
 
 fun
     var a : entero;
-    var b : cadena;
-    a = 23.4;
-    b = 'Hola mundo';
-    c = ' Holas ';
-
+    var b : entero;
+    a = 1;
+    b = 3;
+    a = a + b;
 ffun
 
 ### fin algoritmo
