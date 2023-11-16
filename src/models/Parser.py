@@ -12,6 +12,8 @@ class MyParser:
         self.lookUpTable = {}
         self.resultAsm = ''
         self.countVar = 0
+        self.lookUpJumps = {}
+        self.countJumps = 0
 
     # DESTRUCTOR
     def __del__(self):
@@ -147,10 +149,11 @@ class MyParser:
         | ID
         '''
         # devuelve el valor del factor, p[2] si es un exparitmetico entre parentesis y p[1] de resto
-        if len(p) == 3:
+        if len(p) == 4:
             p[0] = p[2]
         else:
             p[0] = p[1]
+        print('Factor aritmetico: ', p[0:])
 
 
     def p_operaciones_aritmeticas(self, p):
@@ -161,21 +164,39 @@ class MyParser:
         '''
 
         # esto permite que p[0] mantenga la recursion
+        # Aca solo puede haber numeros sin ids
         pseudoAsm = ''
-        if len(p) == 4:
-            if p[3] != '':
-                pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-                if p[1] == '+':
-                    pseudoAsm += 'Sumar A,B\n'
-                pseudoAsm += p[3]
-                p[0] = pseudoAsm
-            else:
-                pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-                if p[1] == '+':
-                    pseudoAsm += 'Sumar A,B\n'
-                p[0] = pseudoAsm
-        else:
-            p[0] = ''
+        asmToAdd = ''
+
+        if len(p) == 4:  # con recursion
+            pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+            asmToAdd = p[3]
+
+        # dependiendo de la operacion se escribe una instrucción
+        match p[1]:
+            case '+':
+                pseudoAsm += 'Sumar A,B\n'
+            case '-':
+                pseudoAsm += 'Restar A,B\n'
+            case '*':
+                pseudoAsm += 'Mult A,B\n'
+            case '/':
+                pseudoAsm += 'Div A,B\n'
+            case '^': # Este es especial porque requiere un ciclo, x^y = y veces x
+                # Se comienzan a manejar saltos (etiquetas)
+                pseudoAsm += 'Copiar A,C\n'
+                pseudoAsm += 'CargarValor D,1\n'
+                pseudoAsm += 'Restar B,D\n'
+                etiqueta = 'jmp' + str(self.countJumps)
+                self.countJumps += 1
+                pseudoAsm += etiqueta + ':\n'
+                pseudoAsm += 'Mult A,C\n'
+                pseudoAsm += 'Restar B,D\n'
+                pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+
+
+        pseudoAsm += asmToAdd
+        p[0] = pseudoAsm
         print('ops aritmeticas: ', p[0:])
 
 
@@ -188,19 +209,40 @@ class MyParser:
         # esto permite que p[0] mantenga la recursion
         # aca puede haber IDS o numeros normales.
         pseudoAsm = ''
+        asmToAdd = ''
         isVar = self.lookUpTable.get(p[2]) is not None
+
         if isVar:
             numVar = str(self.lookUpTable[p[2]][1])
-        asmToAdd = ''
-        if len(p) == 4:  # con recursion
-            if p[3] != '':
-                asmToAdd = p[3]
-        if isVar:
             pseudoAsm += 'Cargar B,' + numVar + '\n'
         else:
             pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-        if p[1] == '+':
-            pseudoAsm += 'Sumar A,B\n'
+
+        if len(p) == 4:  # con recursion
+            asmToAdd = p[3]
+
+        # dependiendo de la operacion se escribe una instrucción
+        match p[1]:
+            case '+':
+                pseudoAsm += 'Sumar A,B\n'
+            case '-':
+                pseudoAsm += 'Restar A,B\n'
+            case '*':
+                pseudoAsm += 'Mult A,B\n'
+            case '/':
+                pseudoAsm += 'Div A,B\n'
+            case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
+                # Se comienzan a manejar saltos (etiquetas)
+                pseudoAsm += 'Copiar A,C\n'
+                pseudoAsm += 'CargarValor D,1\n'
+                pseudoAsm += 'Restar B,D\n'
+                etiqueta = 'jmp' + str(self.countJumps)
+                self.countJumps += 1
+                pseudoAsm += etiqueta + ':\n'
+                pseudoAsm += 'Mult A,C\n'
+                pseudoAsm += 'Restar B,D\n'
+                pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+
         pseudoAsm += asmToAdd
         p[0] = pseudoAsm
 
@@ -216,20 +258,16 @@ class MyParser:
         '''
 
         pseudoAsm = ''
-        asmToAdd = ''
-        if p[2] != '':
-            asmToAdd = p[2]
-        if self.lookUpTable.get(p[1]) is None:  #  si p[1] no es id entonces lo carga en A
+        asmToAdd = p[2]
+
+        if self.lookUpTable.get(p[1]) is None:  # si p[1] no es id entonces lo carga en A
             pseudoAsm += 'CargarValor A,' + p[1] + '\n'
-            pseudoAsm += p[2]
         else: # si es ID lo carga desde la ram
             pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
-            pseudoAsm += asmToAdd
+        pseudoAsm += asmToAdd # al final agrega lo que traen los hijos
 
         p[0] = pseudoAsm
         print('terminos aritmeticos: ', p[0:])
-
-        # acá ya termina la recursión y por lo tanto puedo hacer pseudoasm
 
 
 
@@ -239,17 +277,15 @@ class MyParser:
         exp_aritmetica : termino_aritmetico
         | termino_aritmetico operador_aritmetico exp_aritmetica
         '''
-        # si len = 2 entonces es un solo termino si no entonces son muchos terminos
+        # si len = 2 entonces es un solo termino si no entonces son muchos terminos, se guarda la recursion en p[0]
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
             p[0] = p[1] + p[2] + p[3]
-        # todo creo que aca va la conversion a asm por parte de las ops aritmeticas
-        # supongo yo, haciendo que cargue a registro el primero que encuentre, haga la operacion con el siguiente operador y asi sucesivamente
 
         print("Parser exp arit: ",p[0:])
 
-    ####################### APARADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
+    ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
     def p_operador_relacional(self,p):
         # operador_relacional ::= IGUAL | DIFERENTE | LEQ | GEQ | MENOR | MAYOR

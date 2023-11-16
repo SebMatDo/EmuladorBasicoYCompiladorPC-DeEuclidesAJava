@@ -2,10 +2,7 @@
 
 fun
     var a : entero;
-    var b : entero;
-    a = 1;
-    b = 3;
-    a = a + b;
+    a = (2);
 ffun
 
 ### fin algoritmo
