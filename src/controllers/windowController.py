@@ -24,6 +24,13 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
             [window.table_unidad_control.setItem(i, 0, QTableWidgetItem(window.machine.table_unidad_control[i])) for i in range(0, 2)]
             window.textEditCodigoObjeto.setText("".join([window.machine.object_code[i]+"\n" for i in range(0, 1024)]))
             window.table_ram.selectRow(window.machine.instruccion_actual) if window.machine.instruccion_actual > 0 else 0
+            
+            if window.machine.use_console:
+                window.textEditConsola.setText(window.machine.console.IO.getvalue())
+                cursor_console = self.textEditConsola.textCursor()
+                cursor_console.movePosition(cursor_console.End)
+                self.textEditConsola.setTextCursor(cursor_console)
+                self.textEditConsola.ensureCursorVisible()
 
 
     def initializeAllInCeros(self):

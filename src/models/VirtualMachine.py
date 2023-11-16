@@ -2,11 +2,12 @@ import re
 from src.utils.convertions import decimalToBinary, binaryToDec
 from src.models.Assembler import Assembler
 from src.models.LinkerLoader import LinkerLoader
+from src.models.consola import CapturadorSalida
 
 
 class Machine:
 
-    def __init__(self, code, instruccion_actual, instruccion_siguiente):
+    def __init__(self, code, instruccion_actual, instruccion_siguiente, use_console = True):
         # Define opcodes
         self.opcodes = {
             'Parar': '0000000000000000',
@@ -33,6 +34,9 @@ class Machine:
         self.windows = []
         self.assembler = Assembler()
         self.likerLoader= LinkerLoader()
+        self.use_console = use_console
+        if use_console:
+            self.console = CapturadorSalida()
         self.code = code
         self.instruccion_actual = instruccion_actual
         self.instruccion_siguiente = instruccion_siguiente
