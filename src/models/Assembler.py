@@ -98,7 +98,7 @@ class Assembler:
                     values = statement.group().replace('Cargar','').split(',')
                     registro = values[0]
                     variable = values[1]
-                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Cargar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Cargar'] + virtualMachine.registers[registro] + decimalToBinary(int(variable))
 
                 case 'CargarValor':
                     values = statement.group().replace('CargarValor', '').split(',')

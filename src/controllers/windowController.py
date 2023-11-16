@@ -23,8 +23,9 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
             [window.table_alu.setItem(i, 1, QTableWidgetItem(str(window.machine.table_alu[i][1]))) for i in range(0, 4)]
             [window.table_unidad_control.setItem(i, 0, QTableWidgetItem(window.machine.table_unidad_control[i])) for i in range(0, 2)]
             window.textEditCodigoObjeto.setText("".join([window.machine.object_code[i]+"\n" for i in range(0, 1024)]))
+            window.textEditCodigoASM.setText(window.machine.code)
             window.table_ram.selectRow(window.machine.instruccion_actual) if window.machine.instruccion_actual > 0 else 0
-            
+
             if window.machine.use_console:
                 window.textEditConsola.setText(window.machine.console.IO.getvalue())
                 cursor_console = self.textEditConsola.textCursor()
@@ -65,4 +66,9 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
     def on_button_enlazar_cargar_clicked(self):
         for window in self.machine.windows:
             self.machine.enlazar_cargar(window.spinBox_pos_enlazar.value())
+        self.updateStateMachine()
+    
+    @QtCore.pyqtSlot()
+    def on_button_compilar_clicked(self):
+        self.machine.compile(self.textEditCodigoFuente.toPlainText())
         self.updateStateMachine()

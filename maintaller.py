@@ -1,33 +1,34 @@
 import sys
-import os
 from PyQt5.QtWidgets import QApplication
 from src.controllers.windowController import Window
 from src.models.VirtualMachine import Machine
-from pathlib import Path
 
-from src.models.Lexer import MyLexer
-from src.models.Parser import MyParser
 
 instruccion_actual = 0
 instruccion_siguiente = 0
-code = ''
+code = """mcd:                        
+CargarValor    A, 128                        
+CargarValor     B, 244
+bucle:                        
+Copiar        A, C                        
+Restar        C, B                        
+SaltarSiCero    fin
+SaltarSiNeg    menor                        
+Restar        A, B                        
+Saltar        bucle                        
+menor:                                                
+Restar        B,A                        
+Saltar        bucle                        
+fin:                        
+Almacenar    A,50                        
+Parar"""
 instrucciones_asm = {}
 
 # Inicializar la máquina
 machine = Machine(code, instruccion_actual, instruccion_siguiente, use_console=True)
 
 
-data_folder = Path(os.getcwd())
-file_path = data_folder / "tests/lexer/algoritmoPrueba.lp"
-print(file_path)
-data = open(file_path,'r').read()
 
-# construir lexer y probarlo
-myLex = MyLexer()
-myLex.build() # Build the lexer
-
-myPars = MyParser(myLex)
-myPars.test(data)
 
 # Inicializar la aplicación
 app = QApplication(sys.argv)

@@ -3,7 +3,7 @@ from src.utils.convertions import decimalToBinary, binaryToDec
 from src.models.Assembler import Assembler
 from src.models.LinkerLoader import LinkerLoader
 from src.models.consola import CapturadorSalida
-
+from src.models.Compiler import Compiler
 
 class Machine:
 
@@ -34,10 +34,12 @@ class Machine:
         self.windows = []
         self.assembler = Assembler()
         self.likerLoader= LinkerLoader()
+        self.compiler = Compiler()
         self.use_console = use_console
         if use_console:
             self.console = CapturadorSalida()
         self.code = code
+        self.hight_level_code = ''
         self.instruccion_actual = instruccion_actual
         self.instruccion_siguiente = instruccion_siguiente
         self.table_ram = ['0000000000000000' for i in range(0, 1024)]
@@ -207,3 +209,7 @@ class Machine:
 
     def enlazar_cargar(self, startPoint):
         self.likerLoader.linkLoad(self, startPoint)
+        
+    def compile(self, hight_level_code):
+        self.hight_level_code = hight_level_code
+        self.code = self.compiler.compile(hight_level_code)

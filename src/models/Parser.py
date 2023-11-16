@@ -107,7 +107,7 @@ class MyParser:
         inicializar_variable : VAR ID COLON tipos
         '''
         print('PARSER: se inicializa variable ', p[2:])
-        p[0] = 'inicializacion_variable\n'
+        p[0] = ''
         # mientras haya menos de 10 variables
         if self.countVar <= 10:
             # Se guarda la variable en un diccionario haciendo referencia a su tipo y su numero de variable
