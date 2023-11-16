@@ -110,7 +110,8 @@ class Assembler:
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Almacenar'] + virtualMachine.registers[registro] + decimalToBinary(relocVariables[variable])
+                    print(values)
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['Almacenar'] + virtualMachine.registers[registro] + decimalToBinary(int(variable))
                     
 
                 case 'SaltarSiCero':
