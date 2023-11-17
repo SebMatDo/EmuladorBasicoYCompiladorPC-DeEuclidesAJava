@@ -9,7 +9,7 @@ class Assembler:
         self.basic_regular_expresion = {
             'variable': '\w+',
             'label': '\w+:',
-            'valor': '\d+',
+            'valor': '-?\d+',
             'registro': '(A|B|C|D)'
         }
         self.opcode_regular_expresion = re.compile(

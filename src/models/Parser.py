@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from src.models.Lexer import MyLexer
+from src.utils.convertions import isNum
 
 
 class MyParser:
@@ -227,7 +228,7 @@ class MyParser:
         pseudoAsm = ''
 
         if p[1] == '(': # si viene en parentesis
-            if not str.isnumeric(p[2]): # y no es numerico
+            if not isNum(p[2]): # y no es numerico
                 pseudoAsm += p[2] # se copia lo que trae
                 #todo verificar con variables
                 p[0] = pseudoAsm
@@ -241,7 +242,7 @@ class MyParser:
         if len(p) == 4:  # si viene así hay cosas.
 
             # se añade lo que se traia de antes
-            if not str.isnumeric(p[1]) and str.isnumeric(p[3]): # caso (var or asm) op_aritmetico num, o llevamos al otro caso
+            if not isNum(p[1]) and isNum(p[3]): # caso (var or asm) op_aritmetico num, o llevamos al otro caso
                 #swap
                 temp = p[1]
                 temp2 = p[3]
@@ -250,7 +251,7 @@ class MyParser:
 
             # ya que las variables o el asm siempre quedaran en p[3]
 
-            if not str.isnumeric(p[3]) and str.isnumeric(p[1]): # caso num op_aritmetico (var or asm)
+            if not isNum(p[3]) and isNum(p[1]): # caso num op_aritmetico (var or asm)
                 if self.lexerLookUpTable.get(p[3]) is None: # si el str no es variable
                     pseudoAsm += p[3]
                 else: # si es una variable caso num op var
@@ -259,7 +260,7 @@ class MyParser:
                     pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
                 pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
 
-            if not str.isnumeric(p[3]) and not str.isnumeric(p[1]): # ambos factores son ASM o variables o una combinacion de ambos
+            if not isNum(p[3]) and not isNum(p[1]): # ambos factores son ASM o variables o una combinacion de ambos
                 if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None: # ambas asm
                     pseudoAsm += p[1]
                     pseudoAsm += 'Copiar A,D\n'
@@ -289,10 +290,10 @@ class MyParser:
                     pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
 
 
-            if str.isnumeric(p[1]):  # verificar si el factor es numerico
+            if isNum(p[1]):  # verificar si el factor es numerico
                 pseudoAsm += 'CargarValor A,' + p[1] + '\n'  # si es numerico carga su valor en A
 
-            if str.isnumeric(p[3]):  # verificar si el factor es numerico
+            if isNum(p[3]):  # verificar si el factor es numerico
                 pseudoAsm += 'CargarValor B,' + p[3] + '\n'  # si es numerico carga su valor en B
 
             # dependiendo de la operacion se escribe una instrucción
@@ -331,7 +332,7 @@ class MyParser:
         exp_aritmetica : termino_aritmetico
         '''
         # Verifica si lo que llega como exp aritmetica es un ASM o un numero
-        if str.isnumeric(p[1]) or str.isdecimal(p[1]):
+        if isNum(p[1]) or isNum(p[1]):
             p[0] = 'CargarValor A,' + p[1] + '\n'
         else:
             p[0] = p[1]
