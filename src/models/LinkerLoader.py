@@ -1,5 +1,8 @@
 import re
 
+from src.utils.convertions import decimalToBinary
+
+
 class LinkerLoader:
 
     def __init__(self):
@@ -7,7 +10,7 @@ class LinkerLoader:
     
     # Función que se encarga de reemplazar las posiciones en memoria por su valor en binario no relativo sino exacto
     def matchBinary(self ,match):
-        return bin(int(match.group(1))+self.startPoint)[2:]
+        return decimalToBinary(int(match.group(1))+self.startPoint)[2:]
 
     # Carga y actualiza la máquina para empezar a correr las instrucciones desde este punto
     def linkLoad(self, virtualMachine, startPoint):

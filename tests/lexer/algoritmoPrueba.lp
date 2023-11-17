@@ -1,14 +1,15 @@
 ###### SE INICIALIZA UN ALGORITMO muy simple para pruebas #####
 
 fun
-    var a : entero;
-    var b : entero;
-    var c : entero;
-    var d: entero;
-    a = -10;
-    b = 3;
-    c = (( 24/b )/(-b - 1))^(2*2);  ## Final boss operation
-    ##d = -a;
+    var a : booleano;
+    var b : booleano;
+    var c : booleano;
+    a = verdadero;
+    b = falso && verdadero; ## falso
+    a = a || b;  ## verdadero
+    c = (a || b && b || (a && verdadero || verdadero || falso) || falso);
+    ## c = (verdadero || falso && falso || verdadero || falso) finalmente da verdadero
+
 ffun
 
 ### fin algoritmo

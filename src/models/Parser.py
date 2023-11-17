@@ -28,7 +28,10 @@ class MyParser:
         ('left', 'SUMA', 'RESTA'),
         ('left', 'MULT', 'DIV'),
         ('left', 'POTENCIA'),
-        #('right', 'UMINUS'),  # Unary minus operator
+        ('left', 'NEGAR'),
+        ('left', 'Y'),
+        ('left', 'O'),
+
     )
     # GRAMMAR START
 
@@ -107,8 +110,6 @@ class MyParser:
             p[0] = pseudoAsm
             print('Parser: se identifica una asignacion\n', p[0])
 
-
-
     def p_tipos(self,p):
         # tipos ::= ENTERO | BOOLEANO | DECIMAL | CADENA
         '''
@@ -156,60 +157,6 @@ class MyParser:
         else:
             p[0] = str(p[1])
         #print('Factor aritmetico: ', p[0:])
-    #
-    # def p_factor_aritmetico_id(self, p):
-    #     '''
-    #     factor_aritmetico_id: factor_aritmetico
-    #     | ID
-    #     '''
-    #
-    # def p_operaciones_aritmeticas_id(self, p):
-    #     # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
-    #     '''
-    #     operaciones_aritmeticas_id : operador_aritmetico factor_aritmetico_id operaciones_aritmeticas_id
-    #     | operador_aritmetico factor_aritmetico_id
-    #     '''
-    #     # esto permite que p[0] mantenga la recursion
-    #     # aca puede haber IDS o numeros normales.
-    #     pseudoAsm = ''
-    #     asmToAdd = ''
-    #     isVar = self.lookUpTable.get(p[2]) is not None
-    #
-    #     if isVar:
-    #         numVar = str(self.lookUpTable[p[2]][1])
-    #         pseudoAsm += 'Cargar B,' + numVar + '\n'
-    #     else:
-    #         pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-    #
-    #     if len(p) == 4:  # con recursion
-    #         asmToAdd = p[3]
-    #
-    #     # dependiendo de la operacion se escribe una instrucción
-    #     match p[1]:
-    #         case '+':
-    #             pseudoAsm += 'Sumar A,B\n'
-    #         case '-':
-    #             pseudoAsm += 'Restar A,B\n'
-    #         case '*':
-    #             pseudoAsm += 'Mult A,B\n'
-    #         case '/':
-    #             pseudoAsm += 'Div A,B\n'
-    #         case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
-    #             # Se comienzan a manejar saltos (etiquetas)
-    #             pseudoAsm += 'Copiar A,C\n'
-    #             pseudoAsm += 'CargarValor D,1\n'
-    #             pseudoAsm += 'Restar B,D\n'
-    #             etiqueta = 'jmp' + str(self.countJumps)
-    #             self.countJumps += 1
-    #             pseudoAsm += etiqueta + ':\n'
-    #             pseudoAsm += 'Mult A,C\n'
-    #             pseudoAsm += 'Restar B,D\n'
-    #             pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
-    #
-    #     pseudoAsm += asmToAdd
-    #     p[0] = pseudoAsm
-    #
-    #     print('ops aritmeticas con id: ', p[0:])
 
     def p_termino_aritmetico(self, p):
         # termino_aritmetico ::= factor_aritmetico ( operaciones_aritmeticas | operaciones_aritmeticas_id )
@@ -228,8 +175,8 @@ class MyParser:
         # ahora la logica esta aca para poder manejar mejor las cargas
         pseudoAsm = ''
         print(p[0:])
-        if p[1] == '-':
 
+        if p[1] == '-':
             if isNum(p[2]):
                 pseudoAsm += 'CargarValor B,' + p[2] + '\n'
                 pseudoAsm += 'CargarValor A,0\n Restar A,B\n'
@@ -246,7 +193,6 @@ class MyParser:
                     pseudoAsm += 'CargarValor A,0\n Restar A,B\n'
             p[0] = pseudoAsm
             return p[0]
-            print('RRRRRRESTA')
 
         if p[1] == '(': # si viene en parentesis
             if not isNum(p[2]): # y no es numerico
@@ -260,7 +206,7 @@ class MyParser:
             p[0] = p[1]
 
         if len(p) == 4:  # si viene así hay cosas.
-            if not isNum(p[1]) and isNum(p[3]): # caso (var or asm) op_aritmetico num, o llevamos al otro caso
+            if not isNum(p[1]) and isNum(p[3]): # caso (var or asm) op_aritmetico num
                 if self.lexerLookUpTable.get(p[1]) is None:  # si el str no es variable caso asm op num
                     pseudoAsm += p[1]
                 else:  # si es una variable caso var op num
@@ -343,95 +289,216 @@ class MyParser:
 
         print('term aritm ', p[0:])
 
-
     def p_exp_arimetica(self, p):
         '''
         exp_aritmetica : termino_aritmetico
         '''
         # Verifica si lo que llega como exp aritmetica es un ASM o un numero
-        if isNum(p[1]) or isNum(p[1]):
+        if isNum(p[1]):
             p[0] = 'CargarValor A,' + p[1] + '\n'
-        else:
+        else: # si no es un numero es un asm y se pasa normal
             p[0] = p[1]
         print("Parser exp arit: ",p[0:])
 
     ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
-
-    def p_operador_relacional(self,p):
-        # operador_relacional ::= IGUAL | DIFERENTE | LEQ | GEQ | MENOR | MAYOR
-        '''
-        operador_relacional : IGUAL
-        | DIFERENTE
-        | LEQ
-        | GEQ
-        | MENOR
-        | MAYOR
-        '''
-        # print('Parser: se identifica un op relacional ', p)
-
-    def p_factor_relacional(self, p):
-        #factor_relacional ::= '(' factor_relacional ')' | ( exp_aritmetica | ID ) operador_relacional ( exp_aritmetica | ID )
-        '''
-        factor_relacional : LPAREN factor_relacional RPAREN
-        | exp_aritmetica operador_relacional exp_aritmetica
-        | ID operador_relacional exp_aritmetica
-        | exp_aritmetica operador_relacional ID
-        | ID operador_relacional ID
-        '''
-        print('FACTOR RELACIONAL')
+    #
+    # def p_operador_relacional(self,p):
+    #     # operador_relacional ::= IGUAL | DIFERENTE | LEQ | GEQ | MENOR | MAYOR
+    #     '''
+    #     operador_relacional : IGUAL
+    #     | DIFERENTE
+    #     | LEQ
+    #     | GEQ
+    #     | MENOR
+    #     | MAYOR
+    #     '''
+    #     # print('Parser: se identifica un op relacional ', p)
+    #
+    # def p_factor_relacional(self, p):
+    #     #factor_relacional ::= '(' factor_relacional ')' | ( exp_aritmetica | ID ) operador_relacional ( exp_aritmetica | ID )
+    #     '''
+    #     factor_relacional : LPAREN factor_relacional RPAREN
+    #     | exp_aritmetica operador_relacional exp_aritmetica
+    #     | ID operador_relacional exp_aritmetica
+    #     | exp_aritmetica operador_relacional ID
+    #     | ID operador_relacional ID
+    #     '''
+    #     print('FACTOR RELACIONAL')
 
     ####################### APARADO PARA RECONOCER EXPRESIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
-
-    def p_operador_booleano(self, p):
-        # operador_booleano ::= IGUAL | DIFERENTE | Y | O
-        '''
-        operador_booleano : IGUAL
-        | DIFERENTE
-        | Y
-        | O
-        '''
 
     def p_factor_booleano(self, p):
         # factor_booleano ::= NEGAR* ( '(' exp_booleana ')' | VERDADERO | FALSO | factor_relacional )
         # factor_booleano_id ::= factor_booleano | NEGAR? ID
         '''
-        factor_booleano : LPAREN exp_booleana RPAREN
-        | VERDADERO
+        factor_booleano : VERDADERO
         | FALSO
-        | factor_relacional
-        | NEGAR factor_booleano
-        factor_booleano_id : factor_booleano
         | ID
-        | NEGAR ID
         '''
         print('FACTOR BOOLEANO')
+        if p[1] == 'verdadero':
+            p[0] = '1'
+        elif p[1] == 'falso':
+            p[0] = '0'
+        else: # devolver normal si es variable
+            p[0] = p[1]
 
-    def p_operaciones_booleanas(self, p):
-        # operaciones_boolenas ::= ( operador_booleano factor_booleano )*
-        # operaciones_booleanas_id ::= ( operador_booleano factor_booleano_id )*
-        '''
-        operaciones_booleanas : operador_booleano factor_booleano operaciones_booleanas
-        | empty
-        operaciones_booleanas_id : operador_booleano factor_booleano_id operaciones_booleanas_id
-        | empty
-        '''
+    # def p_operaciones_booleanas(self, p):
+    #     # operaciones_boolenas ::= ( operador_booleano factor_booleano )*
+    #     # operaciones_booleanas_id ::= ( operador_booleano factor_booleano_id )*
+    #     '''
+    #     operaciones_booleanas : operador_booleano factor_booleano operaciones_booleanas
+    #     | empty
+    #     '''
 
     def p_termino_booleano(self, p):
         # termino_booleano ::= factor_booleano operaciones_booleanas
         # | ( ID operador_booleano factor_booleano_id | NEGAR ID ) operaciones_booleanas_id
         '''
-        termino_booleano : factor_booleano operaciones_booleanas
-        | ID operador_booleano factor_booleano_id operaciones_booleanas_id
-        | NEGAR ID operaciones_booleanas_id
+        termino_booleano : LPAREN termino_booleano RPAREN
+        | NEGAR termino_booleano
+        | termino_booleano Y termino_booleano
+        | termino_booleano O termino_booleano
+        | factor_booleano
         '''
+        # ahora la logica esta aca para poder manejar mejor las cargas
+        pseudoAsm = ''
+
+        if p[1] == '!':
+            if isNum(p[2]):# si viene como 0 o 1
+                pseudoAsm += 'CargarValor A,' + p[2] + '\n'
+            else: # si es una var o asm
+                if self.lexerLookUpTable.get(p[2]) is None:  # si el str no es var
+                    pseudoAsm += p[2]
+                else: # si es var
+                    if self.lookUpTable.get(p[2]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[2])
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[2])[1]) + '\n'
+
+            # luego de tener el valor en el registro A, hago la logica para
+            # hacer un swap entre 0 y 1. !true =false. !false =true
+            pseudoAsm += 'CargarValor B,1\n Restar A,B\n'
+            etiqueta = 'jmp' + str(self.countJumps)
+            self.countJumps += 1
+            pseudoAsm += 'SaltarSiCero ' + etiqueta + '\n'
+            pseudoAsm += 'CargarValor A,1'
+            pseudoAsm += etiqueta + ':\n'
+            p[0] = pseudoAsm
+            return p[0]
+
+        if p[1] == '(': # si viene en parentesis
+            if not isNum(p[2]): # y no es numerico
+                pseudoAsm += p[2] # se copia lo que trae
+                p[0] = pseudoAsm
+            else:
+                p[0] = p[2] # si esnumerico se devuelve asi solito
+            return p[0]
+
+        if len(p) == 2:  # si se toma la ruta de factor solito
+            p[0] = p[1]
+            return p[0]
+
+        if len(p) == 4:  # si viene así hay cosas.
+            if not isNum(p[1]) and isNum(p[3]):  # caso (var or asm) op_bool num
+                if self.lexerLookUpTable.get(p[1]) is None:  # si el str no es variable caso asm op num
+                    pseudoAsm += p[1]
+                else:  # si es una variable caso var op num
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception(
+                            'ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
+
+            if not isNum(p[3]) and isNum(p[1]): # caso num op_aritmetico (var or asm)
+                if self.lexerLookUpTable.get(p[3]) is None: # si el str no es variable caso num op asm
+                    pseudoAsm += p[3]
+                else: # si es una variable caso num op var
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
+
+            if not isNum(p[3]) and not isNum(p[1]): # ambos factores son ASM o variables o una combinacion de ambos
+                if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None: # asm op asm
+                    pseudoAsm += p[1]
+                    pseudoAsm += 'Copiar A,D\n'
+                    pseudoAsm += p[3]
+                    pseudoAsm += 'Copiar A,B\n'
+                    pseudoAsm += 'Copiar D,A\n'
+
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is not None: # ambas son variabes var op var
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[1])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+
+                if self.lexerLookUpTable.get(p[3]) is not None and self.lexerLookUpTable.get(p[1]) is None:  # solo la p[3] es variable caso asm op var
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += p[1]
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is None: # solo la p[1] es variable caso var op asm
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[1])
+                    pseudoAsm += p[3]
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+
+
+            if isNum(p[1]):  # verificar si el factor es numerico
+                pseudoAsm += 'CargarValor A,' + p[1] + '\n'  # si es numerico carga su valor en A
+
+            if isNum(p[3]):  # verificar si el factor es numerico
+                pseudoAsm += 'CargarValor B,' + p[3] + '\n'  # si es numerico carga su valor en B
+
+            # dependiendo de la operacion se escribe una instrucción
+            match p[2]:
+                case '&&':
+                    pseudoAsm += 'Mult A,B\n'
+                case '||':
+
+                    pseudoAsm += 'Sumar A,B\n' # en el or solo da cero si ambos son cero, entonces podemos sumar y verificar si da 2
+                    pseudoAsm += 'CargarValor C,1\n Restar A,C\n'
+
+                    etiquetaTrue = 'jmp' + str(self.countJumps)
+                    self.countJumps += 1
+                    etiquetaFalse = 'jmp' + str(self.countJumps)
+                    self.countJumps += 1
+                    etiquetaFin = 'jmp' + str(self.countJumps)
+                    self.countJumps += 1
+
+                    pseudoAsm += 'SaltarSiCero ' + etiquetaTrue + '\n'
+                    pseudoAsm += 'SaltarSiNeg ' + etiquetaFalse + '\n'
+                    pseudoAsm += 'Saltar ' + etiquetaFin + '\n'
+
+                    pseudoAsm += etiquetaTrue + ':\n'
+                    pseudoAsm += 'CargarValor A,1\n'
+                    pseudoAsm += 'Saltar ' + etiquetaFin + '\n'
+
+                    pseudoAsm += etiquetaFalse + ':\n'
+                    pseudoAsm += 'CargarValor A,0\n'
+
+                    pseudoAsm += etiquetaFin + ':\n'
+
+
+            p[0] = pseudoAsm
+
+        print('term bool ', p[0:])
+
 
     def p_exp_booleana(self, p):
         # exp_booleana ::= termino_booleano ( operador_booleano termino_booleano )*
         '''
         exp_booleana : termino_booleano
-        | termino_booleano operador_booleano exp_booleana
         '''
-        #print('Parser: exp booleana', p)
+        # Verifica si lo que llega como exp booleana es un ASM o un bool
+        if isNum(p[1]):
+            p[0] = 'CargarValor A,' + p[1] + '\n'
+        else:
+            p[0] = p[1]
+        print('Parser: exp booleana', p[0:])
 
     ###################### SENTENCIAS ###########################
 

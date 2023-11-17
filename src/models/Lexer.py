@@ -71,7 +71,7 @@ class MyLexer():
         'mod': 'MOD',
         'var': 'VAR',
         'entero': 'ENTERO',
-        'bool': 'BOOLEANO',
+        'booleano': 'BOOLEANO',
         'decimal': 'DECIMAL',
         'cadena' : 'CADENA',
         'si': 'SI',
