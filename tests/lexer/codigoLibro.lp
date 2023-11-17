@@ -4,9 +4,13 @@ fun
     ###### PRUEBAS INICIALIZAR VARIABLES #####
     var a : entero;
     var b : entero;
+    var c : entero;
+    var d : entero;
+    c = 256;
+    d = 125;
     a = b;
-    a = 'Holamundo';
-    b = "Hola mundo soy una cadena";
+    ## a = 'Holamundo';
+    ## b = "Hola mundo soy una cadena";
 
     ##### PRUEBAS ARITMETICAS ##########
     a = 2;
@@ -20,10 +24,9 @@ fun
     b = (2) + (3);
     a = ((123 ^ 23 - 23 * 94) / (1234 - 34)  + (23 * -233) * 2 ^ 2);
     a = 2 + 3 ^ 2 - (-52.5 - (52 - -2.4) + 54 * 2) + (52.5 - 5) / (2);
-    a = b+a+c+d+e;
     b = 123+123+4124.2;
     c = a + 23 + b + 2;
-    d = 12 - b + 3.4 - d + 3.3;
+    d = 12 - b + 3.4 - a + 3.3;
 
 
     ####### PRUEBAS BOOLEANAS ##########
@@ -37,8 +40,8 @@ fun
 
     a = c != d;
     a = b==b;
-    b = d || e;
-    b = (a || b);
+    b = d || a;
+    b = a || b;
     a = a || (b && d);
     a = falso || (123==123 && a==b);
 
@@ -92,20 +95,12 @@ fun
     mientras (a >= 3) hacer
         b = 2;
         si (23+a+b < 1000) entonces
-            k = k+1;
+            a = a+1;
         fsi;
     fmientras;
 
 
 
-    ## LEER Y ESCRIBIR
-    mientras a<2 hacer
-        leer(b);
-    fmientras;
-
-    si b > c entonces
-        escribir(c);
-    fsi;
 
 ffun
 

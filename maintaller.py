@@ -15,7 +15,7 @@ machine = Machine(code, instruccion_actual, instruccion_siguiente, use_console=F
 
 
 data_folder = Path(os.getcwd())
-file_path = data_folder / "tests/lexer/algoritmoPrueba.lp"
+file_path = data_folder / "tests/lexer/codigoLibro.lp"
 print(file_path)
 data = open(file_path,'r').read()
 

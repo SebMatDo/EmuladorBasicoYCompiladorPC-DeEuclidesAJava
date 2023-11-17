@@ -76,7 +76,7 @@ class Machine:
             # poner true el C
             self.table_alu[0][0] = '01'
             self.table_alu[0][1] = '1'
-        elif resultado > 0:
+        elif resultado > 0 and resultado <= 512:
             # poner en true el P
             self.table_alu[1][0] = '01'
             self.table_alu[1][1] = '1'
@@ -84,10 +84,11 @@ class Machine:
             # poner en true el N
             self.table_alu[2][0] = '01'
             self.table_alu[2][1] = '1'
-        elif type(resultado):
-            # poner true el D
+        elif resultado > 512:
+            # poner true el D overflow
             self.table_alu[3][0] = '01'
             self.table_alu[3][1] = '1'
+            print('ERROR: LA MAQUINA SE HA DESBORDADO, las instrucciones seguirán su orden pero el resultado puede ser erroneo')
 
     def siguiente_instruccion(self): 
 
@@ -101,8 +102,7 @@ class Machine:
                 instruccion_actual_completa = re.sub(f"^{instruction[1]}", "", instruccion_actual_completa)
                 break
 
-        print('Instrucción actual: ', self.instruccion_actual_type, 'linea: ',self.instruccion_actual, 'Instruccion completa: ', instruccion_actual_completa)
-        # todo actualizar esto para que use los opcode, hacer un super switch que me verifique que instruccion es y con que celdas o registros
+        #print('Instrucción actual: ', self.instruccion_actual_type, 'linea: ',self.instruccion_actual, 'Instruccion completa: ', instruccion_actual_completa)
         # Como tengo guardadas las cosas en ram, es mas facil operarlas
 
         #Obtengo el registro en caso de que las operaciones involucren un registro en el primer argumento

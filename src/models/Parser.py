@@ -42,7 +42,7 @@ class MyParser:
         '''
         algoritmo : FUN proposiciones FFUN
         '''
-        print('Parser: se identifica un algoritmo completo exitoso')
+        print('Se identifica un algoritmo completo exitoso')
         pseudoAsm = p[2]
         pseudoAsm += 'Parar'
         self.resultAsm = pseudoAsm
@@ -103,7 +103,7 @@ class MyParser:
                 # Si es una variable de lexer pero no ha sido inicializada
                 # Si no se hace esta comprobacion se agregaria un NONE Y rompe el programa
                 if self.lookUpTable.get(p[3]) is None:
-                    print('ERROR VARIABLE 2 NO INICIALIZADA')
+                    print('ERROR: VARIABLE' + str(p[3]) + 'NO INICIALIZADA')
                 else:
                     pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
 
@@ -130,7 +130,7 @@ class MyParser:
         '''
         inicializar_variable : VAR ID COLON tipos
         '''
-        print('PARSER: se inicializa variable ', p[2:])
+        #print('PARSER: se inicializa variable ', p[2:])
         p[0] = ''
         # mientras haya menos de 10 variables
         if self.countVar <= 10:
@@ -142,7 +142,7 @@ class MyParser:
             else:
                 self.lookUpTable[p[2]][0] = p[4]
         else:
-            print('ERROR NO SE PUEDEN DEFINIR MÁS DE 10 VARIABLES')
+            print('ERROR: NO SE PUEDEN DEFINIR MÁS DE 10 VARIABLES')
 
 
 ####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
@@ -157,7 +157,7 @@ class MyParser:
 
         # Verificacion de decimales
         if type(p[1]) == float:
-            print('ERROR EL ANALIZADOR SINTACTICO DETECTA UN DECIMAL, se tomará solo la parte entera')
+            print('ERROR: EL ANALIZADOR SINTACTICO DETECTA UN DECIMAL, se tomará solo la parte entera')
             p[0] = str(int(p[1]))
         else:
             p[0] = str(p[1])
@@ -179,7 +179,6 @@ class MyParser:
 
         # ahora la logica esta aca para poder manejar mejor las cargas
         pseudoAsm = ''
-
         if p[1] == '-':
             if isNum(p[2]):
                 pseudoAsm += 'CargarValor B,' + p[2] + '\n'
@@ -302,7 +301,7 @@ class MyParser:
             p[0] = 'CargarValor A,' + p[1] + '\n'
         else: # si no es un numero es un asm y se pasa normal
             p[0] = p[1]
-        print("Parser exp_aritmetica: ",p[0:])
+        #print("Parser exp_aritmetica: ",p[0:])
 
     ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -370,7 +369,8 @@ class MyParser:
                     raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir',
                                     p[1])
                 pseudoAsm += p[3]
-                pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+                pseudoAsm += 'Copiar A,B\n'
+                pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
 
         # dependiendo de la operacion se escribe una instrucción
         match p[2]:
@@ -426,7 +426,7 @@ class MyParser:
 
                 pseudoAsm += 'Restar A,B\n'
                 pseudoAsm += 'SaltarSiCero ' + etiquetaTrue + '\n'
-                pseudoAsm += 'SaltarSiDes ' + etiquetaTrue + '\n'
+                pseudoAsm += 'SaltarSiNeg ' + etiquetaTrue + '\n'
 
                 pseudoAsm += 'CargarValor A,0\n'
                 pseudoAsm += 'Saltar ' + etiquetaFin + '\n'
@@ -441,7 +441,7 @@ class MyParser:
                 self.countJumps += 1
 
                 pseudoAsm += 'Restar A,B\n'
-                pseudoAsm += 'SaltarSiDes ' + etiquetaTrue + '\n'
+                pseudoAsm += 'SaltarSiNeg ' + etiquetaTrue + '\n'
 
                 pseudoAsm += 'CargarValor A,0\n'
                 pseudoAsm += 'Saltar ' + etiquetaFin + '\n'
@@ -465,6 +465,7 @@ class MyParser:
                 pseudoAsm += etiquetaFin + ':\n'
 
         p[0] = pseudoAsm
+        #print ('relacion: ', p[0:])
 
     ####################### APARADO PARA RECONOCER EXPRESIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -474,15 +475,13 @@ class MyParser:
         '''
         factor_booleano : VERDADERO
         | FALSO
-        | ID
         '''
 
         if p[1] == 'verdadero':
             p[0] = '1'
         elif p[1] == 'falso':
             p[0] = '0'
-        else: # devolver normal si es variable
-            p[0] = p[1]
+        #print('Fac bool ', p[0:])
 
     def p_termino_booleano(self, p):
         # termino_booleano ::= factor_booleano operaciones_booleanas
@@ -494,10 +493,16 @@ class MyParser:
         | termino_booleano O termino_booleano
         | factor_booleano
         | factor_relacional
+        | NEGAR ID
+        | ID Y termino_booleano
+        | termino_booleano Y ID
+        | ID Y ID
+        | ID O termino_booleano
+        | termino_booleano O ID
+        | ID O ID
         '''
         # ahora la logica esta aca para poder manejar mejor las cargas
         pseudoAsm = ''
-
         if p[1] == '!':
             if isNum(p[2]):# si viene como 0 o 1
                 pseudoAsm += 'CargarValor A,' + p[2] + '\n'
@@ -632,7 +637,7 @@ class MyParser:
             p[0] = 'CargarValor A,' + p[1] + '\n'
         else:
             p[0] = p[1]
-        print('Parser: exp_booleana: ', p[0:])
+        #print('Parser: exp_booleana: ', p[0:])
 
     ###################### SENTENCIAS ###########################
 
@@ -692,13 +697,40 @@ class MyParser:
 
             p[0] = pseudoAsm
 
-        print('sentencia si: ',p[0:])
+        #print('sentencia si: ',p[0:])
 
     def p_sentencia_mientras(self, p):
         # sentencia_mientras ::= MIENTRAS exp_booleana HACER proposicion proposiciones FMIENTRAS
         '''
         sentencia_mientras : MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
         '''
+
+        pseudoAsm = ''
+
+        etiquetaInicio = 'jmp' + str(self.countJumps)
+        self.countJumps += 1
+        etiquetaLogica = 'jmp' + str(self.countJumps)
+        self.countJumps += 1
+        etiquetaFin = 'jmp' + str(self.countJumps)
+        self.countJumps += 1
+
+        pseudoAsm += etiquetaInicio + ':\n'
+        # carga la exp booleana y deberia quedar en el registro A
+        pseudoAsm += p[2]
+
+        # resta para comprobar si la expresion es true (1)
+        pseudoAsm += 'CargarValor B,1\n'
+        pseudoAsm += 'Restar A,B\n'
+
+        pseudoAsm += 'SaltarSiCero ' + etiquetaLogica + '\n'
+        # Si no es true entonces saltara al final
+        pseudoAsm += 'Saltar ' + etiquetaFin + '\n'
+        pseudoAsm += etiquetaLogica + ':\n'
+        pseudoAsm += p[4]
+        pseudoAsm += 'Saltar ' + etiquetaInicio + '\n'
+        pseudoAsm += etiquetaFin + ':\n'
+
+        p[0] = pseudoAsm
 
     def p_sentencia_hacer_mientras(self, p):
         # sentencia_hacer_mientras ::= HACER proposicion proposiciones MIENTRAS exp_booleana
@@ -718,19 +750,18 @@ class MyParser:
         sentencia_escribir :  ESCRIBIR LPAREN ID RPAREN
         '''
 
-
     def p_error(self,p):
         if p:
-            print("Syntax error at token", p.type, ' y ', p)
+            print("ERROR SINTACTICO: se encuentra un error en el siguiente Token", p.type, ' y ', p)
             # Just discard the token and tell the parser it's okay.
             self.parser.errok()
         else:
-            print("Syntax error at EOF")
+            print("ERROR SINTACTICO: se encuentra un error al final del archivo")
 
     def build(self,**kwargs):
         self.parser = yacc.yacc(module=self, **kwargs)
 
     def test(self, data):
         self.parser.parse(data)
-        print('VARIABLES INICIALIZADAS TOTALES:', self.lookUpTable)
-        print('\nALGORITMO FINAL:\n', self.resultAsm)
+        #print('VARIABLES INICIALIZADAS TOTALES:', self.lookUpTable)
+        #print('\nALGORITMO FINAL:\n', self.resultAsm)

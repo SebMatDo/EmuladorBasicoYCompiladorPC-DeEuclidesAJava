@@ -75,7 +75,7 @@ class Assembler:
                     variable = values[1]
                     relocVariables[variable] = 1
                 case 'None':
-                    print('Error en linea: ', linea)
+                    print('ERROR: El assembler encontró un error en la linea: ', linea)
 
         # acá es donde se rellena utilizando los datos anteriores.
         # conociendo el numero de instrucciones podemos estar seguros de darle a la variables espacio en ram desde núm de instrucciones + 1
@@ -89,7 +89,7 @@ class Assembler:
         # Luego mapea cada linea ya con los diccionarios resueltos y coloca ese resultado en la memoria ram.
         # todo Tambien se guardan las instrucciones en texto para la simulacion de manera: {linea de instrucción: [tipo de instruccion, registro, memoria]}
         for statement in self.opcode_regular_expresion.finditer(refinedCode):
-            print(statement)
+            #print(statement)
             opname = statement.lastgroup
             match opname:
                 case 'Label':#si es un label, ya sabemos que se ignora
@@ -110,9 +110,8 @@ class Assembler:
                     values = statement.group().replace('Almacenar', '').split(',')
                     registro = values[0]
                     variable = values[1]
-                    print(values)
+                    #print(values)
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['Almacenar'] + virtualMachine.registers[registro] + decimalToBinary(int(variable))
-                    
 
                 case 'SaltarSiCero':
                     value = statement.group().replace('SaltarSiCero', '')

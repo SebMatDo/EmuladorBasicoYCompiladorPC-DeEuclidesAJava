@@ -51,20 +51,26 @@ Rule 40    factor_relacional -> LPAREN factor_relacional RPAREN
 Rule 41    factor_relacional -> exp_aritmetica operador_relacional exp_aritmetica
 Rule 42    factor_booleano -> VERDADERO
 Rule 43    factor_booleano -> FALSO
-Rule 44    factor_booleano -> ID
-Rule 45    termino_booleano -> LPAREN termino_booleano RPAREN
-Rule 46    termino_booleano -> NEGAR termino_booleano
-Rule 47    termino_booleano -> termino_booleano Y termino_booleano
-Rule 48    termino_booleano -> termino_booleano O termino_booleano
-Rule 49    termino_booleano -> factor_booleano
-Rule 50    termino_booleano -> factor_relacional
-Rule 51    exp_booleana -> termino_booleano
-Rule 52    sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI
-Rule 53    sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-Rule 54    sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-Rule 55    sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana
-Rule 56    sentencia_leer -> LEER LPAREN ID RPAREN
-Rule 57    sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN
+Rule 44    termino_booleano -> LPAREN termino_booleano RPAREN
+Rule 45    termino_booleano -> NEGAR termino_booleano
+Rule 46    termino_booleano -> termino_booleano Y termino_booleano
+Rule 47    termino_booleano -> termino_booleano O termino_booleano
+Rule 48    termino_booleano -> factor_booleano
+Rule 49    termino_booleano -> factor_relacional
+Rule 50    termino_booleano -> NEGAR ID
+Rule 51    termino_booleano -> ID Y termino_booleano
+Rule 52    termino_booleano -> termino_booleano Y ID
+Rule 53    termino_booleano -> ID Y ID
+Rule 54    termino_booleano -> ID O termino_booleano
+Rule 55    termino_booleano -> termino_booleano O ID
+Rule 56    termino_booleano -> ID O ID
+Rule 57    exp_booleana -> termino_booleano
+Rule 58    sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI
+Rule 59    sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+Rule 60    sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+Rule 61    sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana
+Rule 62    sentencia_leer -> LEER LPAREN ID RPAREN
+Rule 63    sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN
 
 Terminals, with rules where they appear
 
@@ -77,41 +83,41 @@ DECIMAL              : 19
 DIFERENTE            : 35
 DIV                  : 28
 ENTERO               : 17
-ENTONCES             : 52 53
-ESCRIBIR             : 57
+ENTONCES             : 58 59
+ESCRIBIR             : 63
 FALSO                : 43
 FFUN                 : 1
-FMIENTRAS            : 54
-FSI                  : 52 53
+FMIENTRAS            : 60
+FSI                  : 58 59
 FUN                  : 1
 GEQ                  : 37
-HACER                : 54 55
-ID                   : 12 12 13 14 15 16 21 24 44 56 57
+HACER                : 60 61
+ID                   : 12 12 13 14 15 16 21 24 50 51 52 53 53 54 55 56 56 62 63
 IGUAL                : 34
-LEER                 : 56
+LEER                 : 62
 LEQ                  : 36
-LPAREN               : 25 40 45 56 57
+LPAREN               : 25 40 44 62 63
 MAYOR                : 39
 MENOR                : 38
-MIENTRAS             : 54 55
+MIENTRAS             : 60 61
 MOD                  : 
 MULT                 : 27
-NEGAR                : 46
+NEGAR                : 45 50
 NULO                 : 15
 NUM_DECIMAL          : 23
 NUM_ENTERO           : 22
-O                    : 48
+O                    : 47 54 55 56
 PCOMA                : 3 4 5 6 7 8 9
 POTENCIA             : 26
 RESTA                : 30 32
-RPAREN               : 25 40 45 56 57
-SI                   : 52 53
-SINO                 : 53
+RPAREN               : 25 40 44 62 63
+SI                   : 58 59
+SINO                 : 59
 SUMA                 : 29
 VALOR_CADENA         : 16
 VAR                  : 21
 VERDADERO            : 42
-Y                    : 47
+Y                    : 46 51 52 53
 error                : 
 
 Nonterminals, with rules where they appear
@@ -120,21 +126,21 @@ algoritmo            : 0
 asignacion           : 3
 empty                : 
 exp_aritmetica       : 13 41 41
-exp_booleana         : 14 52 53 54 55
+exp_booleana         : 14 58 59 60 61
 factor_aritmetico    : 31 32
-factor_booleano      : 49
-factor_relacional    : 40 50
+factor_booleano      : 48
+factor_relacional    : 40 49
 inicializar_variable : 4
 operador_relacional  : 41
 proposicion          : 10 11
-proposiciones        : 1 10 52 53 53 54 55
+proposiciones        : 1 10 58 59 59 60 61
 sentencia_escribir   : 9
 sentencia_hacer_mientras : 7
 sentencia_leer       : 8
 sentencia_mientras   : 6
 sentencia_si         : 5
 termino_aritmetico   : 25 26 26 27 27 28 28 29 29 30 30 33
-termino_booleano     : 45 46 47 47 48 48 51
+termino_booleano     : 44 45 46 46 47 47 51 52 54 55 57
 tipos                : 21
 
 Parsing method: LALR
@@ -172,12 +178,12 @@ state 2
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
     ID              shift and go to state 12
     VAR             shift and go to state 13
@@ -223,12 +229,12 @@ state 4
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
   ! shift/reduce conflict for MIENTRAS resolved as shift
     FFUN            reduce using rule 11 (proposiciones -> proposicion .)
@@ -324,18 +330,24 @@ state 13
 
 state 14
 
-    (52) sentencia_si -> SI . exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> SI . exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (51) exp_booleana -> . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (58) sentencia_si -> SI . exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> SI . exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (57) exp_booleana -> . termino_booleano
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -353,9 +365,9 @@ state 14
 
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    ID              shift and go to state 36
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
@@ -370,17 +382,23 @@ state 14
 
 state 15
 
-    (54) sentencia_mientras -> MIENTRAS . exp_booleana HACER proposiciones FMIENTRAS
-    (51) exp_booleana -> . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (60) sentencia_mientras -> MIENTRAS . exp_booleana HACER proposiciones FMIENTRAS
+    (57) exp_booleana -> . termino_booleano
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -398,9 +416,9 @@ state 15
 
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    ID              shift and go to state 36
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
@@ -415,7 +433,7 @@ state 15
 
 state 16
 
-    (55) sentencia_hacer_mientras -> HACER . proposiciones MIENTRAS exp_booleana
+    (61) sentencia_hacer_mientras -> HACER . proposiciones MIENTRAS exp_booleana
     (10) proposiciones -> . proposicion proposiciones
     (11) proposiciones -> . proposicion
     (3) proposicion -> . asignacion PCOMA
@@ -431,12 +449,12 @@ state 16
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
     ID              shift and go to state 12
     VAR             shift and go to state 13
@@ -458,14 +476,14 @@ state 16
 
 state 17
 
-    (56) sentencia_leer -> LEER . LPAREN ID RPAREN
+    (62) sentencia_leer -> LEER . LPAREN ID RPAREN
 
     LPAREN          shift and go to state 47
 
 
 state 18
 
-    (57) sentencia_escribir -> ESCRIBIR . LPAREN ID RPAREN
+    (63) sentencia_escribir -> ESCRIBIR . LPAREN ID RPAREN
 
     LPAREN          shift and go to state 48
 
@@ -615,7 +633,7 @@ state 28
     (15) asignacion -> ID ASIGNAR . NULO
     (16) asignacion -> ID ASIGNAR . VALOR_CADENA
     (33) exp_aritmetica -> . termino_aritmetico
-    (51) exp_booleana -> . termino_booleano
+    (57) exp_booleana -> . termino_booleano
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
     (26) termino_aritmetico -> . termino_aritmetico POTENCIA termino_aritmetico
     (27) termino_aritmetico -> . termino_aritmetico MULT termino_aritmetico
@@ -624,18 +642,24 @@ state 28
     (30) termino_aritmetico -> . termino_aritmetico RESTA termino_aritmetico
     (31) termino_aritmetico -> . factor_aritmetico
     (32) termino_aritmetico -> . RESTA factor_aritmetico
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (22) factor_aritmetico -> . NUM_ENTERO
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
 
@@ -647,8 +671,8 @@ state 28
     NEGAR           shift and go to state 33
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
 
     exp_aritmetica                 shift and go to state 50
     exp_booleana                   shift and go to state 51
@@ -667,36 +691,45 @@ state 29
 
 state 30
 
-    (52) sentencia_si -> SI exp_booleana . ENTONCES proposiciones FSI
-    (53) sentencia_si -> SI exp_booleana . ENTONCES proposiciones SINO proposiciones FSI
+    (58) sentencia_si -> SI exp_booleana . ENTONCES proposiciones FSI
+    (59) sentencia_si -> SI exp_booleana . ENTONCES proposiciones SINO proposiciones FSI
 
     ENTONCES        shift and go to state 56
 
 
 state 31
 
-    (51) exp_booleana -> termino_booleano .
-    (47) termino_booleano -> termino_booleano . Y termino_booleano
-    (48) termino_booleano -> termino_booleano . O termino_booleano
+    (57) exp_booleana -> termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
 
-    ENTONCES        reduce using rule 51 (exp_booleana -> termino_booleano .)
-    HACER           reduce using rule 51 (exp_booleana -> termino_booleano .)
-    PCOMA           reduce using rule 51 (exp_booleana -> termino_booleano .)
+    ENTONCES        reduce using rule 57 (exp_booleana -> termino_booleano .)
+    HACER           reduce using rule 57 (exp_booleana -> termino_booleano .)
+    PCOMA           reduce using rule 57 (exp_booleana -> termino_booleano .)
     Y               shift and go to state 57
     O               shift and go to state 58
 
 
 state 32
 
-    (45) termino_booleano -> LPAREN . termino_booleano RPAREN
+    (44) termino_booleano -> LPAREN . termino_booleano RPAREN
     (40) factor_relacional -> LPAREN . factor_relacional RPAREN
     (25) termino_aritmetico -> LPAREN . termino_aritmetico RPAREN
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -709,7 +742,6 @@ state 32
     (32) termino_aritmetico -> . RESTA factor_aritmetico
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (33) exp_aritmetica -> . termino_aritmetico
     (22) factor_aritmetico -> . NUM_ENTERO
     (23) factor_aritmetico -> . NUM_DECIMAL
@@ -717,10 +749,10 @@ state 32
 
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
+    ID              shift and go to state 36
     RESTA           shift and go to state 41
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
 
@@ -733,16 +765,23 @@ state 32
 
 state 33
 
-    (46) termino_booleano -> NEGAR . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (45) termino_booleano -> NEGAR . termino_booleano
+    (50) termino_booleano -> NEGAR . ID
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -758,11 +797,11 @@ state 33
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
+    ID              shift and go to state 63
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
@@ -776,63 +815,38 @@ state 33
 
 state 34
 
-    (49) termino_booleano -> factor_booleano .
+    (48) termino_booleano -> factor_booleano .
 
-    Y               reduce using rule 49 (termino_booleano -> factor_booleano .)
-    O               reduce using rule 49 (termino_booleano -> factor_booleano .)
-    ENTONCES        reduce using rule 49 (termino_booleano -> factor_booleano .)
-    HACER           reduce using rule 49 (termino_booleano -> factor_booleano .)
-    PCOMA           reduce using rule 49 (termino_booleano -> factor_booleano .)
-    RPAREN          reduce using rule 49 (termino_booleano -> factor_booleano .)
+    Y               reduce using rule 48 (termino_booleano -> factor_booleano .)
+    O               reduce using rule 48 (termino_booleano -> factor_booleano .)
+    ENTONCES        reduce using rule 48 (termino_booleano -> factor_booleano .)
+    HACER           reduce using rule 48 (termino_booleano -> factor_booleano .)
+    PCOMA           reduce using rule 48 (termino_booleano -> factor_booleano .)
+    RPAREN          reduce using rule 48 (termino_booleano -> factor_booleano .)
 
 
 state 35
 
-    (50) termino_booleano -> factor_relacional .
+    (49) termino_booleano -> factor_relacional .
 
-    Y               reduce using rule 50 (termino_booleano -> factor_relacional .)
-    O               reduce using rule 50 (termino_booleano -> factor_relacional .)
-    ENTONCES        reduce using rule 50 (termino_booleano -> factor_relacional .)
-    HACER           reduce using rule 50 (termino_booleano -> factor_relacional .)
-    PCOMA           reduce using rule 50 (termino_booleano -> factor_relacional .)
-    RPAREN          reduce using rule 50 (termino_booleano -> factor_relacional .)
+    Y               reduce using rule 49 (termino_booleano -> factor_relacional .)
+    O               reduce using rule 49 (termino_booleano -> factor_relacional .)
+    ENTONCES        reduce using rule 49 (termino_booleano -> factor_relacional .)
+    HACER           reduce using rule 49 (termino_booleano -> factor_relacional .)
+    PCOMA           reduce using rule 49 (termino_booleano -> factor_relacional .)
+    RPAREN          reduce using rule 49 (termino_booleano -> factor_relacional .)
 
 
 state 36
 
-    (42) factor_booleano -> VERDADERO .
-
-    Y               reduce using rule 42 (factor_booleano -> VERDADERO .)
-    O               reduce using rule 42 (factor_booleano -> VERDADERO .)
-    ENTONCES        reduce using rule 42 (factor_booleano -> VERDADERO .)
-    HACER           reduce using rule 42 (factor_booleano -> VERDADERO .)
-    PCOMA           reduce using rule 42 (factor_booleano -> VERDADERO .)
-    RPAREN          reduce using rule 42 (factor_booleano -> VERDADERO .)
-
-
-state 37
-
-    (43) factor_booleano -> FALSO .
-
-    Y               reduce using rule 43 (factor_booleano -> FALSO .)
-    O               reduce using rule 43 (factor_booleano -> FALSO .)
-    ENTONCES        reduce using rule 43 (factor_booleano -> FALSO .)
-    HACER           reduce using rule 43 (factor_booleano -> FALSO .)
-    PCOMA           reduce using rule 43 (factor_booleano -> FALSO .)
-    RPAREN          reduce using rule 43 (factor_booleano -> FALSO .)
-
-
-state 38
-
-    (44) factor_booleano -> ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
     (24) factor_aritmetico -> ID .
 
-  ! reduce/reduce conflict for RPAREN resolved using rule 24 (factor_aritmetico -> ID .)
-    Y               reduce using rule 44 (factor_booleano -> ID .)
-    O               reduce using rule 44 (factor_booleano -> ID .)
-    ENTONCES        reduce using rule 44 (factor_booleano -> ID .)
-    HACER           reduce using rule 44 (factor_booleano -> ID .)
-    PCOMA           reduce using rule 44 (factor_booleano -> ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
     POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
     MULT            reduce using rule 24 (factor_aritmetico -> ID .)
     DIV             reduce using rule 24 (factor_aritmetico -> ID .)
@@ -846,7 +860,29 @@ state 38
     MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
     RPAREN          reduce using rule 24 (factor_aritmetico -> ID .)
 
-  ! RPAREN          [ reduce using rule 44 (factor_booleano -> ID .) ]
+
+state 37
+
+    (42) factor_booleano -> VERDADERO .
+
+    Y               reduce using rule 42 (factor_booleano -> VERDADERO .)
+    O               reduce using rule 42 (factor_booleano -> VERDADERO .)
+    ENTONCES        reduce using rule 42 (factor_booleano -> VERDADERO .)
+    HACER           reduce using rule 42 (factor_booleano -> VERDADERO .)
+    PCOMA           reduce using rule 42 (factor_booleano -> VERDADERO .)
+    RPAREN          reduce using rule 42 (factor_booleano -> VERDADERO .)
+
+
+state 38
+
+    (43) factor_booleano -> FALSO .
+
+    Y               reduce using rule 43 (factor_booleano -> FALSO .)
+    O               reduce using rule 43 (factor_booleano -> FALSO .)
+    ENTONCES        reduce using rule 43 (factor_booleano -> FALSO .)
+    HACER           reduce using rule 43 (factor_booleano -> FALSO .)
+    PCOMA           reduce using rule 43 (factor_booleano -> FALSO .)
+    RPAREN          reduce using rule 43 (factor_booleano -> FALSO .)
 
 
 state 39
@@ -859,14 +895,14 @@ state 39
     (38) operador_relacional -> . MENOR
     (39) operador_relacional -> . MAYOR
 
-    IGUAL           shift and go to state 64
-    DIFERENTE       shift and go to state 65
-    LEQ             shift and go to state 66
-    GEQ             shift and go to state 67
-    MENOR           shift and go to state 68
-    MAYOR           shift and go to state 69
+    IGUAL           shift and go to state 67
+    DIFERENTE       shift and go to state 68
+    LEQ             shift and go to state 69
+    GEQ             shift and go to state 70
+    MENOR           shift and go to state 71
+    MAYOR           shift and go to state 72
 
-    operador_relacional            shift and go to state 63
+    operador_relacional            shift and go to state 66
 
 state 40
 
@@ -889,11 +925,11 @@ state 40
     ENTONCES        reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
     HACER           reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
     RPAREN          reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
-    POTENCIA        shift and go to state 70
-    MULT            shift and go to state 71
-    DIV             shift and go to state 72
-    SUMA            shift and go to state 73
-    RESTA           shift and go to state 74
+    POTENCIA        shift and go to state 73
+    MULT            shift and go to state 74
+    DIV             shift and go to state 75
+    SUMA            shift and go to state 76
+    RESTA           shift and go to state 77
 
 
 state 41
@@ -905,9 +941,9 @@ state 41
 
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    factor_aritmetico              shift and go to state 75
+    factor_aritmetico              shift and go to state 78
 
 state 42
 
@@ -980,41 +1016,45 @@ state 44
 
 state 45
 
-    (54) sentencia_mientras -> MIENTRAS exp_booleana . HACER proposiciones FMIENTRAS
+    (60) sentencia_mientras -> MIENTRAS exp_booleana . HACER proposiciones FMIENTRAS
 
-    HACER           shift and go to state 77
+    HACER           shift and go to state 80
 
 
 state 46
 
-    (55) sentencia_hacer_mientras -> HACER proposiciones . MIENTRAS exp_booleana
+    (61) sentencia_hacer_mientras -> HACER proposiciones . MIENTRAS exp_booleana
 
-    MIENTRAS        shift and go to state 78
+    MIENTRAS        shift and go to state 81
 
 
 state 47
 
-    (56) sentencia_leer -> LEER LPAREN . ID RPAREN
+    (62) sentencia_leer -> LEER LPAREN . ID RPAREN
 
-    ID              shift and go to state 79
+    ID              shift and go to state 82
 
 
 state 48
 
-    (57) sentencia_escribir -> ESCRIBIR LPAREN . ID RPAREN
+    (63) sentencia_escribir -> ESCRIBIR LPAREN . ID RPAREN
 
-    ID              shift and go to state 80
+    ID              shift and go to state 83
 
 
 state 49
 
     (12) asignacion -> ID ASIGNAR ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
     (24) factor_aritmetico -> ID .
-    (44) factor_booleano -> ID .
 
   ! reduce/reduce conflict for PCOMA resolved using rule 12 (asignacion -> ID ASIGNAR ID .)
-  ! reduce/reduce conflict for PCOMA resolved using rule 12 (asignacion -> ID ASIGNAR ID .)
     PCOMA           reduce using rule 12 (asignacion -> ID ASIGNAR ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
     POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
     MULT            reduce using rule 24 (factor_aritmetico -> ID .)
     DIV             reduce using rule 24 (factor_aritmetico -> ID .)
@@ -1026,11 +1066,8 @@ state 49
     GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
     MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
     MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
-    Y               reduce using rule 44 (factor_booleano -> ID .)
-    O               reduce using rule 44 (factor_booleano -> ID .)
 
   ! PCOMA           [ reduce using rule 24 (factor_aritmetico -> ID .) ]
-  ! PCOMA           [ reduce using rule 44 (factor_booleano -> ID .) ]
 
 
 state 50
@@ -1045,14 +1082,14 @@ state 50
     (39) operador_relacional -> . MAYOR
 
     PCOMA           reduce using rule 13 (asignacion -> ID ASIGNAR exp_aritmetica .)
-    IGUAL           shift and go to state 64
-    DIFERENTE       shift and go to state 65
-    LEQ             shift and go to state 66
-    GEQ             shift and go to state 67
-    MENOR           shift and go to state 68
-    MAYOR           shift and go to state 69
+    IGUAL           shift and go to state 67
+    DIFERENTE       shift and go to state 68
+    LEQ             shift and go to state 69
+    GEQ             shift and go to state 70
+    MENOR           shift and go to state 71
+    MAYOR           shift and go to state 72
 
-    operador_relacional            shift and go to state 63
+    operador_relacional            shift and go to state 66
 
 state 51
 
@@ -1078,7 +1115,7 @@ state 53
 state 54
 
     (25) termino_aritmetico -> LPAREN . termino_aritmetico RPAREN
-    (45) termino_booleano -> LPAREN . termino_booleano RPAREN
+    (44) termino_booleano -> LPAREN . termino_booleano RPAREN
     (40) factor_relacional -> LPAREN . factor_relacional RPAREN
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
     (26) termino_aritmetico -> . termino_aritmetico POTENCIA termino_aritmetico
@@ -1088,12 +1125,19 @@ state 54
     (30) termino_aritmetico -> . termino_aritmetico RESTA termino_aritmetico
     (31) termino_aritmetico -> . factor_aritmetico
     (32) termino_aritmetico -> . RESTA factor_aritmetico
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (22) factor_aritmetico -> . NUM_ENTERO
@@ -1101,17 +1145,16 @@ state 54
     (24) factor_aritmetico -> . ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (33) exp_aritmetica -> . termino_aritmetico
 
     LPAREN          shift and go to state 54
     RESTA           shift and go to state 41
     NEGAR           shift and go to state 33
+    ID              shift and go to state 36
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 81
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
 
     termino_aritmetico             shift and go to state 61
     termino_booleano               shift and go to state 59
@@ -1128,17 +1171,17 @@ state 55
     (19) tipos -> . DECIMAL
     (20) tipos -> . CADENA
 
-    ENTERO          shift and go to state 83
-    BOOLEANO        shift and go to state 84
-    DECIMAL         shift and go to state 85
-    CADENA          shift and go to state 86
+    ENTERO          shift and go to state 85
+    BOOLEANO        shift and go to state 86
+    DECIMAL         shift and go to state 87
+    CADENA          shift and go to state 88
 
-    tipos                          shift and go to state 82
+    tipos                          shift and go to state 84
 
 state 56
 
-    (52) sentencia_si -> SI exp_booleana ENTONCES . proposiciones FSI
-    (53) sentencia_si -> SI exp_booleana ENTONCES . proposiciones SINO proposiciones FSI
+    (58) sentencia_si -> SI exp_booleana ENTONCES . proposiciones FSI
+    (59) sentencia_si -> SI exp_booleana ENTONCES . proposiciones SINO proposiciones FSI
     (10) proposiciones -> . proposicion proposiciones
     (11) proposiciones -> . proposicion
     (3) proposicion -> . asignacion PCOMA
@@ -1154,12 +1197,12 @@ state 56
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
     ID              shift and go to state 12
     VAR             shift and go to state 13
@@ -1169,7 +1212,7 @@ state 56
     LEER            shift and go to state 17
     ESCRIBIR        shift and go to state 18
 
-    proposiciones                  shift and go to state 87
+    proposiciones                  shift and go to state 89
     proposicion                    shift and go to state 4
     asignacion                     shift and go to state 5
     inicializar_variable           shift and go to state 6
@@ -1181,16 +1224,23 @@ state 56
 
 state 57
 
-    (47) termino_booleano -> termino_booleano Y . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (46) termino_booleano -> termino_booleano Y . termino_booleano
+    (52) termino_booleano -> termino_booleano Y . ID
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -1206,16 +1256,16 @@ state 57
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
+    ID              shift and go to state 91
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
 
-    termino_booleano               shift and go to state 88
+    termino_booleano               shift and go to state 90
     factor_booleano                shift and go to state 34
     factor_relacional              shift and go to state 35
     exp_aritmetica                 shift and go to state 39
@@ -1224,16 +1274,23 @@ state 57
 
 state 58
 
-    (48) termino_booleano -> termino_booleano O . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (47) termino_booleano -> termino_booleano O . termino_booleano
+    (55) termino_booleano -> termino_booleano O . ID
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -1249,16 +1306,16 @@ state 58
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
+    ID              shift and go to state 93
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
 
-    termino_booleano               shift and go to state 89
+    termino_booleano               shift and go to state 92
     factor_booleano                shift and go to state 34
     factor_relacional              shift and go to state 35
     exp_aritmetica                 shift and go to state 39
@@ -1267,11 +1324,13 @@ state 58
 
 state 59
 
-    (45) termino_booleano -> LPAREN termino_booleano . RPAREN
-    (47) termino_booleano -> termino_booleano . Y termino_booleano
-    (48) termino_booleano -> termino_booleano . O termino_booleano
+    (44) termino_booleano -> LPAREN termino_booleano . RPAREN
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
 
-    RPAREN          shift and go to state 90
+    RPAREN          shift and go to state 94
     Y               shift and go to state 57
     O               shift and go to state 58
 
@@ -1279,14 +1338,14 @@ state 59
 state 60
 
     (40) factor_relacional -> LPAREN factor_relacional . RPAREN
-    (50) termino_booleano -> factor_relacional .
+    (49) termino_booleano -> factor_relacional .
 
   ! shift/reduce conflict for RPAREN resolved as shift
-    RPAREN          shift and go to state 91
-    Y               reduce using rule 50 (termino_booleano -> factor_relacional .)
-    O               reduce using rule 50 (termino_booleano -> factor_relacional .)
+    RPAREN          shift and go to state 95
+    Y               reduce using rule 49 (termino_booleano -> factor_relacional .)
+    O               reduce using rule 49 (termino_booleano -> factor_relacional .)
 
-  ! RPAREN          [ reduce using rule 50 (termino_booleano -> factor_relacional .) ]
+  ! RPAREN          [ reduce using rule 49 (termino_booleano -> factor_relacional .) ]
 
 
 state 61
@@ -1299,12 +1358,12 @@ state 61
     (30) termino_aritmetico -> termino_aritmetico . RESTA termino_aritmetico
     (33) exp_aritmetica -> termino_aritmetico .
 
-    RPAREN          shift and go to state 92
-    POTENCIA        shift and go to state 70
-    MULT            shift and go to state 71
-    DIV             shift and go to state 72
-    SUMA            shift and go to state 73
-    RESTA           shift and go to state 74
+    RPAREN          shift and go to state 96
+    POTENCIA        shift and go to state 73
+    MULT            shift and go to state 74
+    DIV             shift and go to state 75
+    SUMA            shift and go to state 76
+    RESTA           shift and go to state 77
     IGUAL           reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
     DIFERENTE       reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
     LEQ             reduce using rule 33 (exp_aritmetica -> termino_aritmetico .)
@@ -1315,22 +1374,157 @@ state 61
 
 state 62
 
-    (46) termino_booleano -> NEGAR termino_booleano .
-    (47) termino_booleano -> termino_booleano . Y termino_booleano
-    (48) termino_booleano -> termino_booleano . O termino_booleano
+    (45) termino_booleano -> NEGAR termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
 
-    ENTONCES        reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .)
-    HACER           reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .)
-    PCOMA           reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .)
-    RPAREN          reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .)
+    ENTONCES        reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .)
+    HACER           reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .)
+    PCOMA           reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .)
+    RPAREN          reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .)
     Y               shift and go to state 57
     O               shift and go to state 58
 
-  ! Y               [ reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .) ]
-  ! O               [ reduce using rule 46 (termino_booleano -> NEGAR termino_booleano .) ]
+  ! Y               [ reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .) ]
+  ! O               [ reduce using rule 45 (termino_booleano -> NEGAR termino_booleano .) ]
 
 
 state 63
+
+    (50) termino_booleano -> NEGAR ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
+    (24) factor_aritmetico -> ID .
+
+  ! shift/reduce conflict for Y resolved as shift
+  ! shift/reduce conflict for O resolved as shift
+    ENTONCES        reduce using rule 50 (termino_booleano -> NEGAR ID .)
+    HACER           reduce using rule 50 (termino_booleano -> NEGAR ID .)
+    PCOMA           reduce using rule 50 (termino_booleano -> NEGAR ID .)
+    RPAREN          reduce using rule 50 (termino_booleano -> NEGAR ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
+    POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
+    MULT            reduce using rule 24 (factor_aritmetico -> ID .)
+    DIV             reduce using rule 24 (factor_aritmetico -> ID .)
+    SUMA            reduce using rule 24 (factor_aritmetico -> ID .)
+    RESTA           reduce using rule 24 (factor_aritmetico -> ID .)
+    IGUAL           reduce using rule 24 (factor_aritmetico -> ID .)
+    DIFERENTE       reduce using rule 24 (factor_aritmetico -> ID .)
+    LEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
+    MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
+
+  ! Y               [ reduce using rule 50 (termino_booleano -> NEGAR ID .) ]
+  ! O               [ reduce using rule 50 (termino_booleano -> NEGAR ID .) ]
+
+
+state 64
+
+    (51) termino_booleano -> ID Y . termino_booleano
+    (53) termino_booleano -> ID Y . ID
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
+    (42) factor_booleano -> . VERDADERO
+    (43) factor_booleano -> . FALSO
+    (40) factor_relacional -> . LPAREN factor_relacional RPAREN
+    (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
+    (33) exp_aritmetica -> . termino_aritmetico
+    (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
+    (26) termino_aritmetico -> . termino_aritmetico POTENCIA termino_aritmetico
+    (27) termino_aritmetico -> . termino_aritmetico MULT termino_aritmetico
+    (28) termino_aritmetico -> . termino_aritmetico DIV termino_aritmetico
+    (29) termino_aritmetico -> . termino_aritmetico SUMA termino_aritmetico
+    (30) termino_aritmetico -> . termino_aritmetico RESTA termino_aritmetico
+    (31) termino_aritmetico -> . factor_aritmetico
+    (32) termino_aritmetico -> . RESTA factor_aritmetico
+    (22) factor_aritmetico -> . NUM_ENTERO
+    (23) factor_aritmetico -> . NUM_DECIMAL
+    (24) factor_aritmetico -> . ID
+
+    ID              shift and go to state 97
+    LPAREN          shift and go to state 32
+    NEGAR           shift and go to state 33
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
+    RESTA           shift and go to state 41
+    NUM_ENTERO      shift and go to state 43
+    NUM_DECIMAL     shift and go to state 44
+
+    termino_booleano               shift and go to state 98
+    factor_booleano                shift and go to state 34
+    factor_relacional              shift and go to state 35
+    exp_aritmetica                 shift and go to state 39
+    termino_aritmetico             shift and go to state 40
+    factor_aritmetico              shift and go to state 42
+
+state 65
+
+    (54) termino_booleano -> ID O . termino_booleano
+    (56) termino_booleano -> ID O . ID
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
+    (42) factor_booleano -> . VERDADERO
+    (43) factor_booleano -> . FALSO
+    (40) factor_relacional -> . LPAREN factor_relacional RPAREN
+    (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
+    (33) exp_aritmetica -> . termino_aritmetico
+    (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
+    (26) termino_aritmetico -> . termino_aritmetico POTENCIA termino_aritmetico
+    (27) termino_aritmetico -> . termino_aritmetico MULT termino_aritmetico
+    (28) termino_aritmetico -> . termino_aritmetico DIV termino_aritmetico
+    (29) termino_aritmetico -> . termino_aritmetico SUMA termino_aritmetico
+    (30) termino_aritmetico -> . termino_aritmetico RESTA termino_aritmetico
+    (31) termino_aritmetico -> . factor_aritmetico
+    (32) termino_aritmetico -> . RESTA factor_aritmetico
+    (22) factor_aritmetico -> . NUM_ENTERO
+    (23) factor_aritmetico -> . NUM_DECIMAL
+    (24) factor_aritmetico -> . ID
+
+    ID              shift and go to state 99
+    LPAREN          shift and go to state 32
+    NEGAR           shift and go to state 33
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
+    RESTA           shift and go to state 41
+    NUM_ENTERO      shift and go to state 43
+    NUM_DECIMAL     shift and go to state 44
+
+    termino_booleano               shift and go to state 100
+    factor_booleano                shift and go to state 34
+    factor_relacional              shift and go to state 35
+    exp_aritmetica                 shift and go to state 39
+    termino_aritmetico             shift and go to state 40
+    factor_aritmetico              shift and go to state 42
+
+state 66
 
     (41) factor_relacional -> exp_aritmetica operador_relacional . exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -1346,17 +1540,17 @@ state 63
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    exp_aritmetica                 shift and go to state 93
+    exp_aritmetica                 shift and go to state 101
     termino_aritmetico             shift and go to state 40
     factor_aritmetico              shift and go to state 42
 
-state 64
+state 67
 
     (34) operador_relacional -> IGUAL .
 
@@ -1367,7 +1561,7 @@ state 64
     ID              reduce using rule 34 (operador_relacional -> IGUAL .)
 
 
-state 65
+state 68
 
     (35) operador_relacional -> DIFERENTE .
 
@@ -1378,7 +1572,7 @@ state 65
     ID              reduce using rule 35 (operador_relacional -> DIFERENTE .)
 
 
-state 66
+state 69
 
     (36) operador_relacional -> LEQ .
 
@@ -1389,7 +1583,7 @@ state 66
     ID              reduce using rule 36 (operador_relacional -> LEQ .)
 
 
-state 67
+state 70
 
     (37) operador_relacional -> GEQ .
 
@@ -1400,7 +1594,7 @@ state 67
     ID              reduce using rule 37 (operador_relacional -> GEQ .)
 
 
-state 68
+state 71
 
     (38) operador_relacional -> MENOR .
 
@@ -1411,7 +1605,7 @@ state 68
     ID              reduce using rule 38 (operador_relacional -> MENOR .)
 
 
-state 69
+state 72
 
     (39) operador_relacional -> MAYOR .
 
@@ -1422,7 +1616,7 @@ state 69
     ID              reduce using rule 39 (operador_relacional -> MAYOR .)
 
 
-state 70
+state 73
 
     (26) termino_aritmetico -> termino_aritmetico POTENCIA . termino_aritmetico
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1437,16 +1631,16 @@ state 70
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 95
+    termino_aritmetico             shift and go to state 103
     factor_aritmetico              shift and go to state 42
 
-state 71
+state 74
 
     (27) termino_aritmetico -> termino_aritmetico MULT . termino_aritmetico
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1461,16 +1655,16 @@ state 71
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 96
+    termino_aritmetico             shift and go to state 104
     factor_aritmetico              shift and go to state 42
 
-state 72
+state 75
 
     (28) termino_aritmetico -> termino_aritmetico DIV . termino_aritmetico
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1485,16 +1679,16 @@ state 72
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 97
+    termino_aritmetico             shift and go to state 105
     factor_aritmetico              shift and go to state 42
 
-state 73
+state 76
 
     (29) termino_aritmetico -> termino_aritmetico SUMA . termino_aritmetico
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1509,16 +1703,16 @@ state 73
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 98
+    termino_aritmetico             shift and go to state 106
     factor_aritmetico              shift and go to state 42
 
-state 74
+state 77
 
     (30) termino_aritmetico -> termino_aritmetico RESTA . termino_aritmetico
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1533,16 +1727,16 @@ state 74
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 99
+    termino_aritmetico             shift and go to state 107
     factor_aritmetico              shift and go to state 42
 
-state 75
+state 78
 
     (32) termino_aritmetico -> RESTA factor_aritmetico .
 
@@ -1565,7 +1759,7 @@ state 75
     HACER           reduce using rule 32 (termino_aritmetico -> RESTA factor_aritmetico .)
 
 
-state 76
+state 79
 
     (24) factor_aritmetico -> ID .
 
@@ -1588,9 +1782,9 @@ state 76
     HACER           reduce using rule 24 (factor_aritmetico -> ID .)
 
 
-state 77
+state 80
 
-    (54) sentencia_mientras -> MIENTRAS exp_booleana HACER . proposiciones FMIENTRAS
+    (60) sentencia_mientras -> MIENTRAS exp_booleana HACER . proposiciones FMIENTRAS
     (10) proposiciones -> . proposicion proposiciones
     (11) proposiciones -> . proposicion
     (3) proposicion -> . asignacion PCOMA
@@ -1606,12 +1800,12 @@ state 77
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
     ID              shift and go to state 12
     VAR             shift and go to state 13
@@ -1621,7 +1815,7 @@ state 77
     LEER            shift and go to state 17
     ESCRIBIR        shift and go to state 18
 
-    proposiciones                  shift and go to state 100
+    proposiciones                  shift and go to state 108
     proposicion                    shift and go to state 4
     asignacion                     shift and go to state 5
     inicializar_variable           shift and go to state 6
@@ -1631,19 +1825,25 @@ state 77
     sentencia_leer                 shift and go to state 10
     sentencia_escribir             shift and go to state 11
 
-state 78
+state 81
 
-    (55) sentencia_hacer_mientras -> HACER proposiciones MIENTRAS . exp_booleana
-    (51) exp_booleana -> . termino_booleano
-    (45) termino_booleano -> . LPAREN termino_booleano RPAREN
-    (46) termino_booleano -> . NEGAR termino_booleano
-    (47) termino_booleano -> . termino_booleano Y termino_booleano
-    (48) termino_booleano -> . termino_booleano O termino_booleano
-    (49) termino_booleano -> . factor_booleano
-    (50) termino_booleano -> . factor_relacional
+    (61) sentencia_hacer_mientras -> HACER proposiciones MIENTRAS . exp_booleana
+    (57) exp_booleana -> . termino_booleano
+    (44) termino_booleano -> . LPAREN termino_booleano RPAREN
+    (45) termino_booleano -> . NEGAR termino_booleano
+    (46) termino_booleano -> . termino_booleano Y termino_booleano
+    (47) termino_booleano -> . termino_booleano O termino_booleano
+    (48) termino_booleano -> . factor_booleano
+    (49) termino_booleano -> . factor_relacional
+    (50) termino_booleano -> . NEGAR ID
+    (51) termino_booleano -> . ID Y termino_booleano
+    (52) termino_booleano -> . termino_booleano Y ID
+    (53) termino_booleano -> . ID Y ID
+    (54) termino_booleano -> . ID O termino_booleano
+    (55) termino_booleano -> . termino_booleano O ID
+    (56) termino_booleano -> . ID O ID
     (42) factor_booleano -> . VERDADERO
     (43) factor_booleano -> . FALSO
-    (44) factor_booleano -> . ID
     (40) factor_relacional -> . LPAREN factor_relacional RPAREN
     (41) factor_relacional -> . exp_aritmetica operador_relacional exp_aritmetica
     (33) exp_aritmetica -> . termino_aritmetico
@@ -1661,14 +1861,14 @@ state 78
 
     LPAREN          shift and go to state 32
     NEGAR           shift and go to state 33
-    VERDADERO       shift and go to state 36
-    FALSO           shift and go to state 37
-    ID              shift and go to state 38
+    ID              shift and go to state 36
+    VERDADERO       shift and go to state 37
+    FALSO           shift and go to state 38
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
 
-    exp_booleana                   shift and go to state 101
+    exp_booleana                   shift and go to state 109
     termino_booleano               shift and go to state 31
     factor_booleano                shift and go to state 34
     factor_relacional              shift and go to state 35
@@ -1676,27 +1876,100 @@ state 78
     termino_aritmetico             shift and go to state 40
     factor_aritmetico              shift and go to state 42
 
-state 79
+state 82
 
-    (56) sentencia_leer -> LEER LPAREN ID . RPAREN
+    (62) sentencia_leer -> LEER LPAREN ID . RPAREN
 
-    RPAREN          shift and go to state 102
-
-
-state 80
-
-    (57) sentencia_escribir -> ESCRIBIR LPAREN ID . RPAREN
-
-    RPAREN          shift and go to state 103
+    RPAREN          shift and go to state 110
 
 
-state 81
+state 83
 
+    (63) sentencia_escribir -> ESCRIBIR LPAREN ID . RPAREN
+
+    RPAREN          shift and go to state 111
+
+
+state 84
+
+    (21) inicializar_variable -> VAR ID COLON tipos .
+
+    PCOMA           reduce using rule 21 (inicializar_variable -> VAR ID COLON tipos .)
+
+
+state 85
+
+    (17) tipos -> ENTERO .
+
+    PCOMA           reduce using rule 17 (tipos -> ENTERO .)
+
+
+state 86
+
+    (18) tipos -> BOOLEANO .
+
+    PCOMA           reduce using rule 18 (tipos -> BOOLEANO .)
+
+
+state 87
+
+    (19) tipos -> DECIMAL .
+
+    PCOMA           reduce using rule 19 (tipos -> DECIMAL .)
+
+
+state 88
+
+    (20) tipos -> CADENA .
+
+    PCOMA           reduce using rule 20 (tipos -> CADENA .)
+
+
+state 89
+
+    (58) sentencia_si -> SI exp_booleana ENTONCES proposiciones . FSI
+    (59) sentencia_si -> SI exp_booleana ENTONCES proposiciones . SINO proposiciones FSI
+
+    FSI             shift and go to state 112
+    SINO            shift and go to state 113
+
+
+state 90
+
+    (46) termino_booleano -> termino_booleano Y termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
+
+    Y               reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .)
+    ENTONCES        reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .)
+    HACER           reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .)
+    PCOMA           reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .)
+    RPAREN          reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .)
+    O               shift and go to state 58
+
+  ! O               [ reduce using rule 46 (termino_booleano -> termino_booleano Y termino_booleano .) ]
+  ! Y               [ shift and go to state 57 ]
+
+
+state 91
+
+    (52) termino_booleano -> termino_booleano Y ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
     (24) factor_aritmetico -> ID .
-    (44) factor_booleano -> ID .
 
-  ! reduce/reduce conflict for RPAREN resolved using rule 24 (factor_aritmetico -> ID .)
-    RPAREN          reduce using rule 24 (factor_aritmetico -> ID .)
+  ! shift/reduce conflict for Y resolved as shift
+  ! shift/reduce conflict for O resolved as shift
+    ENTONCES        reduce using rule 52 (termino_booleano -> termino_booleano Y ID .)
+    HACER           reduce using rule 52 (termino_booleano -> termino_booleano Y ID .)
+    PCOMA           reduce using rule 52 (termino_booleano -> termino_booleano Y ID .)
+    RPAREN          reduce using rule 52 (termino_booleano -> termino_booleano Y ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
     POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
     MULT            reduce using rule 24 (factor_aritmetico -> ID .)
     DIV             reduce using rule 24 (factor_aritmetico -> ID .)
@@ -1708,103 +1981,76 @@ state 81
     GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
     MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
     MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
-    Y               reduce using rule 44 (factor_booleano -> ID .)
-    O               reduce using rule 44 (factor_booleano -> ID .)
 
-  ! RPAREN          [ reduce using rule 44 (factor_booleano -> ID .) ]
-
-
-state 82
-
-    (21) inicializar_variable -> VAR ID COLON tipos .
-
-    PCOMA           reduce using rule 21 (inicializar_variable -> VAR ID COLON tipos .)
+  ! Y               [ reduce using rule 52 (termino_booleano -> termino_booleano Y ID .) ]
+  ! O               [ reduce using rule 52 (termino_booleano -> termino_booleano Y ID .) ]
 
 
-state 83
+state 92
 
-    (17) tipos -> ENTERO .
+    (47) termino_booleano -> termino_booleano O termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
 
-    PCOMA           reduce using rule 17 (tipos -> ENTERO .)
-
-
-state 84
-
-    (18) tipos -> BOOLEANO .
-
-    PCOMA           reduce using rule 18 (tipos -> BOOLEANO .)
-
-
-state 85
-
-    (19) tipos -> DECIMAL .
-
-    PCOMA           reduce using rule 19 (tipos -> DECIMAL .)
-
-
-state 86
-
-    (20) tipos -> CADENA .
-
-    PCOMA           reduce using rule 20 (tipos -> CADENA .)
-
-
-state 87
-
-    (52) sentencia_si -> SI exp_booleana ENTONCES proposiciones . FSI
-    (53) sentencia_si -> SI exp_booleana ENTONCES proposiciones . SINO proposiciones FSI
-
-    FSI             shift and go to state 104
-    SINO            shift and go to state 105
-
-
-state 88
-
-    (47) termino_booleano -> termino_booleano Y termino_booleano .
-    (47) termino_booleano -> termino_booleano . Y termino_booleano
-    (48) termino_booleano -> termino_booleano . O termino_booleano
-
-    Y               reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .)
-    ENTONCES        reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .)
-    HACER           reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .)
-    PCOMA           reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .)
-    RPAREN          reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .)
-    O               shift and go to state 58
-
-  ! O               [ reduce using rule 47 (termino_booleano -> termino_booleano Y termino_booleano .) ]
-  ! Y               [ shift and go to state 57 ]
-
-
-state 89
-
-    (48) termino_booleano -> termino_booleano O termino_booleano .
-    (47) termino_booleano -> termino_booleano . Y termino_booleano
-    (48) termino_booleano -> termino_booleano . O termino_booleano
-
-    Y               reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
-    O               reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
-    ENTONCES        reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
-    HACER           reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
-    PCOMA           reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
-    RPAREN          reduce using rule 48 (termino_booleano -> termino_booleano O termino_booleano .)
+    Y               reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
+    O               reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
+    ENTONCES        reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
+    HACER           reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
+    PCOMA           reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
+    RPAREN          reduce using rule 47 (termino_booleano -> termino_booleano O termino_booleano .)
 
   ! Y               [ shift and go to state 57 ]
   ! O               [ shift and go to state 58 ]
 
 
-state 90
+state 93
 
-    (45) termino_booleano -> LPAREN termino_booleano RPAREN .
+    (55) termino_booleano -> termino_booleano O ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
+    (24) factor_aritmetico -> ID .
 
-    Y               reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
-    O               reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
-    ENTONCES        reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
-    HACER           reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
-    PCOMA           reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
-    RPAREN          reduce using rule 45 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+  ! shift/reduce conflict for Y resolved as shift
+  ! shift/reduce conflict for O resolved as shift
+    ENTONCES        reduce using rule 55 (termino_booleano -> termino_booleano O ID .)
+    HACER           reduce using rule 55 (termino_booleano -> termino_booleano O ID .)
+    PCOMA           reduce using rule 55 (termino_booleano -> termino_booleano O ID .)
+    RPAREN          reduce using rule 55 (termino_booleano -> termino_booleano O ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
+    POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
+    MULT            reduce using rule 24 (factor_aritmetico -> ID .)
+    DIV             reduce using rule 24 (factor_aritmetico -> ID .)
+    SUMA            reduce using rule 24 (factor_aritmetico -> ID .)
+    RESTA           reduce using rule 24 (factor_aritmetico -> ID .)
+    IGUAL           reduce using rule 24 (factor_aritmetico -> ID .)
+    DIFERENTE       reduce using rule 24 (factor_aritmetico -> ID .)
+    LEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
+    MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
+
+  ! Y               [ reduce using rule 55 (termino_booleano -> termino_booleano O ID .) ]
+  ! O               [ reduce using rule 55 (termino_booleano -> termino_booleano O ID .) ]
 
 
-state 91
+state 94
+
+    (44) termino_booleano -> LPAREN termino_booleano RPAREN .
+
+    Y               reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+    O               reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+    ENTONCES        reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+    HACER           reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+    PCOMA           reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+    RPAREN          reduce using rule 44 (termino_booleano -> LPAREN termino_booleano RPAREN .)
+
+
+state 95
 
     (40) factor_relacional -> LPAREN factor_relacional RPAREN .
 
@@ -1816,7 +2062,7 @@ state 91
     RPAREN          reduce using rule 40 (factor_relacional -> LPAREN factor_relacional RPAREN .)
 
 
-state 92
+state 96
 
     (25) termino_aritmetico -> LPAREN termino_aritmetico RPAREN .
 
@@ -1839,7 +2085,111 @@ state 92
     HACER           reduce using rule 25 (termino_aritmetico -> LPAREN termino_aritmetico RPAREN .)
 
 
-state 93
+state 97
+
+    (53) termino_booleano -> ID Y ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
+    (24) factor_aritmetico -> ID .
+
+  ! shift/reduce conflict for Y resolved as shift
+  ! shift/reduce conflict for O resolved as shift
+    ENTONCES        reduce using rule 53 (termino_booleano -> ID Y ID .)
+    HACER           reduce using rule 53 (termino_booleano -> ID Y ID .)
+    PCOMA           reduce using rule 53 (termino_booleano -> ID Y ID .)
+    RPAREN          reduce using rule 53 (termino_booleano -> ID Y ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
+    POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
+    MULT            reduce using rule 24 (factor_aritmetico -> ID .)
+    DIV             reduce using rule 24 (factor_aritmetico -> ID .)
+    SUMA            reduce using rule 24 (factor_aritmetico -> ID .)
+    RESTA           reduce using rule 24 (factor_aritmetico -> ID .)
+    IGUAL           reduce using rule 24 (factor_aritmetico -> ID .)
+    DIFERENTE       reduce using rule 24 (factor_aritmetico -> ID .)
+    LEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
+    MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
+
+  ! Y               [ reduce using rule 53 (termino_booleano -> ID Y ID .) ]
+  ! O               [ reduce using rule 53 (termino_booleano -> ID Y ID .) ]
+
+
+state 98
+
+    (51) termino_booleano -> ID Y termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
+
+    Y               reduce using rule 51 (termino_booleano -> ID Y termino_booleano .)
+    ENTONCES        reduce using rule 51 (termino_booleano -> ID Y termino_booleano .)
+    HACER           reduce using rule 51 (termino_booleano -> ID Y termino_booleano .)
+    PCOMA           reduce using rule 51 (termino_booleano -> ID Y termino_booleano .)
+    RPAREN          reduce using rule 51 (termino_booleano -> ID Y termino_booleano .)
+    O               shift and go to state 58
+
+  ! O               [ reduce using rule 51 (termino_booleano -> ID Y termino_booleano .) ]
+  ! Y               [ shift and go to state 57 ]
+
+
+state 99
+
+    (56) termino_booleano -> ID O ID .
+    (51) termino_booleano -> ID . Y termino_booleano
+    (53) termino_booleano -> ID . Y ID
+    (54) termino_booleano -> ID . O termino_booleano
+    (56) termino_booleano -> ID . O ID
+    (24) factor_aritmetico -> ID .
+
+  ! shift/reduce conflict for Y resolved as shift
+  ! shift/reduce conflict for O resolved as shift
+    ENTONCES        reduce using rule 56 (termino_booleano -> ID O ID .)
+    HACER           reduce using rule 56 (termino_booleano -> ID O ID .)
+    PCOMA           reduce using rule 56 (termino_booleano -> ID O ID .)
+    RPAREN          reduce using rule 56 (termino_booleano -> ID O ID .)
+    Y               shift and go to state 64
+    O               shift and go to state 65
+    POTENCIA        reduce using rule 24 (factor_aritmetico -> ID .)
+    MULT            reduce using rule 24 (factor_aritmetico -> ID .)
+    DIV             reduce using rule 24 (factor_aritmetico -> ID .)
+    SUMA            reduce using rule 24 (factor_aritmetico -> ID .)
+    RESTA           reduce using rule 24 (factor_aritmetico -> ID .)
+    IGUAL           reduce using rule 24 (factor_aritmetico -> ID .)
+    DIFERENTE       reduce using rule 24 (factor_aritmetico -> ID .)
+    LEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    GEQ             reduce using rule 24 (factor_aritmetico -> ID .)
+    MENOR           reduce using rule 24 (factor_aritmetico -> ID .)
+    MAYOR           reduce using rule 24 (factor_aritmetico -> ID .)
+
+  ! Y               [ reduce using rule 56 (termino_booleano -> ID O ID .) ]
+  ! O               [ reduce using rule 56 (termino_booleano -> ID O ID .) ]
+
+
+state 100
+
+    (54) termino_booleano -> ID O termino_booleano .
+    (46) termino_booleano -> termino_booleano . Y termino_booleano
+    (47) termino_booleano -> termino_booleano . O termino_booleano
+    (52) termino_booleano -> termino_booleano . Y ID
+    (55) termino_booleano -> termino_booleano . O ID
+
+    Y               reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+    O               reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+    ENTONCES        reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+    HACER           reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+    PCOMA           reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+    RPAREN          reduce using rule 54 (termino_booleano -> ID O termino_booleano .)
+
+  ! Y               [ shift and go to state 57 ]
+  ! O               [ shift and go to state 58 ]
+
+
+state 101
 
     (41) factor_relacional -> exp_aritmetica operador_relacional exp_aritmetica .
 
@@ -1851,7 +2201,7 @@ state 93
     RPAREN          reduce using rule 41 (factor_relacional -> exp_aritmetica operador_relacional exp_aritmetica .)
 
 
-state 94
+state 102
 
     (25) termino_aritmetico -> LPAREN . termino_aritmetico RPAREN
     (25) termino_aritmetico -> . LPAREN termino_aritmetico RPAREN
@@ -1866,16 +2216,16 @@ state 94
     (23) factor_aritmetico -> . NUM_DECIMAL
     (24) factor_aritmetico -> . ID
 
-    LPAREN          shift and go to state 94
+    LPAREN          shift and go to state 102
     RESTA           shift and go to state 41
     NUM_ENTERO      shift and go to state 43
     NUM_DECIMAL     shift and go to state 44
-    ID              shift and go to state 76
+    ID              shift and go to state 79
 
-    termino_aritmetico             shift and go to state 106
+    termino_aritmetico             shift and go to state 114
     factor_aritmetico              shift and go to state 42
 
-state 95
+state 103
 
     (26) termino_aritmetico -> termino_aritmetico POTENCIA termino_aritmetico .
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -1902,14 +2252,14 @@ state 95
     ENTONCES        reduce using rule 26 (termino_aritmetico -> termino_aritmetico POTENCIA termino_aritmetico .)
     HACER           reduce using rule 26 (termino_aritmetico -> termino_aritmetico POTENCIA termino_aritmetico .)
 
-  ! POTENCIA        [ shift and go to state 70 ]
-  ! MULT            [ shift and go to state 71 ]
-  ! DIV             [ shift and go to state 72 ]
-  ! SUMA            [ shift and go to state 73 ]
-  ! RESTA           [ shift and go to state 74 ]
+  ! POTENCIA        [ shift and go to state 73 ]
+  ! MULT            [ shift and go to state 74 ]
+  ! DIV             [ shift and go to state 75 ]
+  ! SUMA            [ shift and go to state 76 ]
+  ! RESTA           [ shift and go to state 77 ]
 
 
-state 96
+state 104
 
     (27) termino_aritmetico -> termino_aritmetico MULT termino_aritmetico .
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -1934,16 +2284,16 @@ state 96
     O               reduce using rule 27 (termino_aritmetico -> termino_aritmetico MULT termino_aritmetico .)
     ENTONCES        reduce using rule 27 (termino_aritmetico -> termino_aritmetico MULT termino_aritmetico .)
     HACER           reduce using rule 27 (termino_aritmetico -> termino_aritmetico MULT termino_aritmetico .)
-    POTENCIA        shift and go to state 70
+    POTENCIA        shift and go to state 73
 
   ! POTENCIA        [ reduce using rule 27 (termino_aritmetico -> termino_aritmetico MULT termino_aritmetico .) ]
-  ! MULT            [ shift and go to state 71 ]
-  ! DIV             [ shift and go to state 72 ]
-  ! SUMA            [ shift and go to state 73 ]
-  ! RESTA           [ shift and go to state 74 ]
+  ! MULT            [ shift and go to state 74 ]
+  ! DIV             [ shift and go to state 75 ]
+  ! SUMA            [ shift and go to state 76 ]
+  ! RESTA           [ shift and go to state 77 ]
 
 
-state 97
+state 105
 
     (28) termino_aritmetico -> termino_aritmetico DIV termino_aritmetico .
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -1968,16 +2318,16 @@ state 97
     O               reduce using rule 28 (termino_aritmetico -> termino_aritmetico DIV termino_aritmetico .)
     ENTONCES        reduce using rule 28 (termino_aritmetico -> termino_aritmetico DIV termino_aritmetico .)
     HACER           reduce using rule 28 (termino_aritmetico -> termino_aritmetico DIV termino_aritmetico .)
-    POTENCIA        shift and go to state 70
+    POTENCIA        shift and go to state 73
 
   ! POTENCIA        [ reduce using rule 28 (termino_aritmetico -> termino_aritmetico DIV termino_aritmetico .) ]
-  ! MULT            [ shift and go to state 71 ]
-  ! DIV             [ shift and go to state 72 ]
-  ! SUMA            [ shift and go to state 73 ]
-  ! RESTA           [ shift and go to state 74 ]
+  ! MULT            [ shift and go to state 74 ]
+  ! DIV             [ shift and go to state 75 ]
+  ! SUMA            [ shift and go to state 76 ]
+  ! RESTA           [ shift and go to state 77 ]
 
 
-state 98
+state 106
 
     (29) termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -2000,18 +2350,18 @@ state 98
     O               reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .)
     ENTONCES        reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .)
     HACER           reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .)
-    POTENCIA        shift and go to state 70
-    MULT            shift and go to state 71
-    DIV             shift and go to state 72
+    POTENCIA        shift and go to state 73
+    MULT            shift and go to state 74
+    DIV             shift and go to state 75
 
   ! POTENCIA        [ reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .) ]
   ! MULT            [ reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .) ]
   ! DIV             [ reduce using rule 29 (termino_aritmetico -> termino_aritmetico SUMA termino_aritmetico .) ]
-  ! SUMA            [ shift and go to state 73 ]
-  ! RESTA           [ shift and go to state 74 ]
+  ! SUMA            [ shift and go to state 76 ]
+  ! RESTA           [ shift and go to state 77 ]
 
 
-state 99
+state 107
 
     (30) termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -2034,55 +2384,55 @@ state 99
     O               reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .)
     ENTONCES        reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .)
     HACER           reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .)
-    POTENCIA        shift and go to state 70
-    MULT            shift and go to state 71
-    DIV             shift and go to state 72
+    POTENCIA        shift and go to state 73
+    MULT            shift and go to state 74
+    DIV             shift and go to state 75
 
   ! POTENCIA        [ reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .) ]
   ! MULT            [ reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .) ]
   ! DIV             [ reduce using rule 30 (termino_aritmetico -> termino_aritmetico RESTA termino_aritmetico .) ]
-  ! SUMA            [ shift and go to state 73 ]
-  ! RESTA           [ shift and go to state 74 ]
+  ! SUMA            [ shift and go to state 76 ]
+  ! RESTA           [ shift and go to state 77 ]
 
 
-state 100
+state 108
 
-    (54) sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones . FMIENTRAS
+    (60) sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones . FMIENTRAS
 
-    FMIENTRAS       shift and go to state 107
-
-
-state 101
-
-    (55) sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana .
-
-    PCOMA           reduce using rule 55 (sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana .)
+    FMIENTRAS       shift and go to state 115
 
 
-state 102
+state 109
 
-    (56) sentencia_leer -> LEER LPAREN ID RPAREN .
+    (61) sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana .
 
-    PCOMA           reduce using rule 56 (sentencia_leer -> LEER LPAREN ID RPAREN .)
-
-
-state 103
-
-    (57) sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN .
-
-    PCOMA           reduce using rule 57 (sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN .)
+    PCOMA           reduce using rule 61 (sentencia_hacer_mientras -> HACER proposiciones MIENTRAS exp_booleana .)
 
 
-state 104
+state 110
 
-    (52) sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI .
+    (62) sentencia_leer -> LEER LPAREN ID RPAREN .
 
-    PCOMA           reduce using rule 52 (sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI .)
+    PCOMA           reduce using rule 62 (sentencia_leer -> LEER LPAREN ID RPAREN .)
 
 
-state 105
+state 111
 
-    (53) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO . proposiciones FSI
+    (63) sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN .
+
+    PCOMA           reduce using rule 63 (sentencia_escribir -> ESCRIBIR LPAREN ID RPAREN .)
+
+
+state 112
+
+    (58) sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI .
+
+    PCOMA           reduce using rule 58 (sentencia_si -> SI exp_booleana ENTONCES proposiciones FSI .)
+
+
+state 113
+
+    (59) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO . proposiciones FSI
     (10) proposiciones -> . proposicion proposiciones
     (11) proposiciones -> . proposicion
     (3) proposicion -> . asignacion PCOMA
@@ -2098,12 +2448,12 @@ state 105
     (15) asignacion -> . ID ASIGNAR NULO
     (16) asignacion -> . ID ASIGNAR VALOR_CADENA
     (21) inicializar_variable -> . VAR ID COLON tipos
-    (52) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
-    (53) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
-    (54) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
-    (55) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
-    (56) sentencia_leer -> . LEER LPAREN ID RPAREN
-    (57) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
+    (58) sentencia_si -> . SI exp_booleana ENTONCES proposiciones FSI
+    (59) sentencia_si -> . SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI
+    (60) sentencia_mientras -> . MIENTRAS exp_booleana HACER proposiciones FMIENTRAS
+    (61) sentencia_hacer_mientras -> . HACER proposiciones MIENTRAS exp_booleana
+    (62) sentencia_leer -> . LEER LPAREN ID RPAREN
+    (63) sentencia_escribir -> . ESCRIBIR LPAREN ID RPAREN
 
     ID              shift and go to state 12
     VAR             shift and go to state 13
@@ -2113,7 +2463,7 @@ state 105
     LEER            shift and go to state 17
     ESCRIBIR        shift and go to state 18
 
-    proposiciones                  shift and go to state 108
+    proposiciones                  shift and go to state 116
     proposicion                    shift and go to state 4
     asignacion                     shift and go to state 5
     inicializar_variable           shift and go to state 6
@@ -2123,7 +2473,7 @@ state 105
     sentencia_leer                 shift and go to state 10
     sentencia_escribir             shift and go to state 11
 
-state 106
+state 114
 
     (25) termino_aritmetico -> LPAREN termino_aritmetico . RPAREN
     (26) termino_aritmetico -> termino_aritmetico . POTENCIA termino_aritmetico
@@ -2132,44 +2482,48 @@ state 106
     (29) termino_aritmetico -> termino_aritmetico . SUMA termino_aritmetico
     (30) termino_aritmetico -> termino_aritmetico . RESTA termino_aritmetico
 
-    RPAREN          shift and go to state 92
-    POTENCIA        shift and go to state 70
-    MULT            shift and go to state 71
-    DIV             shift and go to state 72
-    SUMA            shift and go to state 73
-    RESTA           shift and go to state 74
+    RPAREN          shift and go to state 96
+    POTENCIA        shift and go to state 73
+    MULT            shift and go to state 74
+    DIV             shift and go to state 75
+    SUMA            shift and go to state 76
+    RESTA           shift and go to state 77
 
 
-state 107
+state 115
 
-    (54) sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS .
+    (60) sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS .
 
-    PCOMA           reduce using rule 54 (sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS .)
-
-
-state 108
-
-    (53) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones . FSI
-
-    FSI             shift and go to state 109
+    PCOMA           reduce using rule 60 (sentencia_mientras -> MIENTRAS exp_booleana HACER proposiciones FMIENTRAS .)
 
 
-state 109
+state 116
 
-    (53) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI .
+    (59) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones . FSI
 
-    PCOMA           reduce using rule 53 (sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI .)
+    FSI             shift and go to state 117
+
+
+state 117
+
+    (59) sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI .
+
+    PCOMA           reduce using rule 59 (sentencia_si -> SI exp_booleana ENTONCES proposiciones SINO proposiciones FSI .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for MIENTRAS in state 4 resolved as shift
 WARNING: shift/reduce conflict for RPAREN in state 60 resolved as shift
-WARNING: reduce/reduce conflict in state 38 resolved using rule (factor_aritmetico -> ID)
-WARNING: rejected rule (factor_booleano -> ID) in state 38
+WARNING: shift/reduce conflict for Y in state 63 resolved as shift
+WARNING: shift/reduce conflict for O in state 63 resolved as shift
+WARNING: shift/reduce conflict for Y in state 91 resolved as shift
+WARNING: shift/reduce conflict for O in state 91 resolved as shift
+WARNING: shift/reduce conflict for Y in state 93 resolved as shift
+WARNING: shift/reduce conflict for O in state 93 resolved as shift
+WARNING: shift/reduce conflict for Y in state 97 resolved as shift
+WARNING: shift/reduce conflict for O in state 97 resolved as shift
+WARNING: shift/reduce conflict for Y in state 99 resolved as shift
+WARNING: shift/reduce conflict for O in state 99 resolved as shift
 WARNING: reduce/reduce conflict in state 49 resolved using rule (asignacion -> ID ASIGNAR ID)
 WARNING: rejected rule (factor_aritmetico -> ID) in state 49
-WARNING: reduce/reduce conflict in state 49 resolved using rule (asignacion -> ID ASIGNAR ID)
-WARNING: rejected rule (factor_booleano -> ID) in state 49
-WARNING: reduce/reduce conflict in state 81 resolved using rule (factor_aritmetico -> ID)
-WARNING: rejected rule (factor_booleano -> ID) in state 81
