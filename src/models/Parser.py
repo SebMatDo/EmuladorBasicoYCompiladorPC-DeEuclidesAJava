@@ -37,7 +37,6 @@ class MyParser:
 
     def p_algoritmo(self,p):
         # algoritmo regex inicial que comienza la recursion para reconocer una cantidad arbitraria de proposiciones
-
         # algoritmo ::= FUN proposicion+ FFUN
         '''
         algoritmo : FUN proposiciones FFUN
@@ -65,7 +64,6 @@ class MyParser:
         | sentencia_escribir PCOMA
 
         '''
-        # print('Parser: se identifica una proposicion', p)
         p[0] = p[1]
 
     def p_proposiciones(self,p):
@@ -74,14 +72,12 @@ class MyParser:
         proposiciones : proposicion proposiciones
         | proposicion
         '''
-        #print('Parser: se identifica unas proposiciones', p[0:])
         if len(p) == 3:
             p[0] = p[1] + p[2]
         else:
             p[0] = p[1]
 
     def p_asignacion(self,p):
-        # asignacion ::= ID ASIGNAR ( ID | exp_aritmetica | exp_booleana | NULO | VALOR_CADENA )
         '''
         asignacion : ID ASIGNAR ID
         | ID ASIGNAR exp_aritmetica
@@ -90,10 +86,10 @@ class MyParser:
         | ID ASIGNAR VALOR_CADENA
         '''
 
-        # Si intenta usar una variable no inicializada
+        # Si intenta usar una variable no inicializada manda error
         pseudoAsm = ''
         if self.lookUpTable.get(p[1]) is None:
-            print('ERROR: Variable INICIAL no inicializada siendo asignada', p[1])
+            print('ERROR: Variable ' +  str(p[1]) + 'no inicializada siendo asignada')
         else:
             # todo verificacion de tipos
 
@@ -126,11 +122,10 @@ class MyParser:
         p[0] = p[1]
 
     def p_inicializar_variable(self,p):
-        # inicializar_variable ::= VAR ID COLON tipos
         '''
         inicializar_variable : VAR ID COLON tipos
         '''
-        #print('PARSER: se inicializa variable ', p[2:])
+
         p[0] = ''
         # mientras haya menos de 10 variables
         if self.countVar <= 10:
@@ -145,10 +140,10 @@ class MyParser:
             print('ERROR: NO SE PUEDEN DEFINIR MÁS DE 10 VARIABLES')
 
 
-####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
+####################### APARTADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
     def p_factor_aritmetico(self, p):
-        # factor_aritmetico_id ::= factor_aritmetico | ID
+
         '''
         factor_aritmetico : NUM_ENTERO
         | NUM_DECIMAL
@@ -161,11 +156,8 @@ class MyParser:
             p[0] = str(int(p[1]))
         else:
             p[0] = str(p[1])
-        #print('Factor aritmetico: ', p[0:])
 
     def p_termino_aritmetico(self, p):
-        # termino_aritmetico ::= factor_aritmetico ( operaciones_aritmeticas | operaciones_aritmeticas_id )
-        # | ID operaciones_aritmeticas_id
         '''
         termino_aritmetico : LPAREN termino_aritmetico RPAREN
         | termino_aritmetico POTENCIA termino_aritmetico
@@ -290,7 +282,6 @@ class MyParser:
 
             p[0] = pseudoAsm
 
-        #print('term aritm ', p[0:])
 
     def p_exp_arimetica(self, p):
         '''
@@ -301,7 +292,6 @@ class MyParser:
             p[0] = 'CargarValor A,' + p[1] + '\n'
         else: # si no es un numero es un asm y se pasa normal
             p[0] = p[1]
-        #print("Parser exp_aritmetica: ",p[0:])
 
     ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -315,18 +305,15 @@ class MyParser:
         | MENOR
         | MAYOR
         '''
-        # print('Parser: se identifica un op relacional ', p)
         p[0] = p[1]
 
     def p_factor_relacional(self, p):
-        #factor_relacional ::= '(' factor_relacional ')' | ( exp_aritmetica | ID ) operador_relacional ( exp_aritmetica | ID )
         '''
         factor_relacional : LPAREN factor_relacional RPAREN
         | exp_aritmetica operador_relacional exp_aritmetica
         '''
-        # ahora la logica esta aca para poder manejar mejor las cargas
-        pseudoAsm = ''
 
+        pseudoAsm = ''
         if p[1] == '(':  # si viene en parentesis
             if not isNum(p[2]):  # y no es numerico
                 pseudoAsm += p[2]  # se copia lo que trae
@@ -334,7 +321,6 @@ class MyParser:
             else:
                 p[0] = p[2]  # si esnumerico se devuelve asi solito
             return p[0]
-
 
         if not isNum(p[3]) and not isNum(p[1]):  # acá siempre ambos serán ASMS o Vars
             if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None:  # asm op asm
@@ -465,7 +451,6 @@ class MyParser:
                 pseudoAsm += etiquetaFin + ':\n'
 
         p[0] = pseudoAsm
-        #print ('relacion: ', p[0:])
 
     ####################### APARADO PARA RECONOCER EXPRESIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -481,11 +466,8 @@ class MyParser:
             p[0] = '1'
         elif p[1] == 'falso':
             p[0] = '0'
-        #print('Fac bool ', p[0:])
 
     def p_termino_booleano(self, p):
-        # termino_booleano ::= factor_booleano operaciones_booleanas
-        # | ( ID operador_booleano factor_booleano_id | NEGAR ID ) operaciones_booleanas_id
         '''
         termino_booleano : LPAREN termino_booleano RPAREN
         | NEGAR termino_booleano
@@ -501,7 +483,7 @@ class MyParser:
         | termino_booleano O ID
         | ID O ID
         '''
-        # ahora la logica esta aca para poder manejar mejor las cargas
+
         pseudoAsm = ''
         if p[1] == '!':
             if isNum(p[2]):# si viene como 0 o 1
@@ -585,7 +567,6 @@ class MyParser:
                     pseudoAsm += p[3]
                     pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
 
-
             if isNum(p[1]):  # verificar si el factor es numerico
                 pseudoAsm += 'CargarValor A,' + p[1] + '\n'  # si es numerico carga su valor en A
 
@@ -621,11 +602,7 @@ class MyParser:
 
                     pseudoAsm += etiquetaFin + ':\n'
 
-
             p[0] = pseudoAsm
-
-        #print('term bool ', p[0:])
-
 
     def p_exp_booleana(self, p):
         # exp_booleana ::= termino_booleano ( operador_booleano termino_booleano )*
@@ -637,7 +614,6 @@ class MyParser:
             p[0] = 'CargarValor A,' + p[1] + '\n'
         else:
             p[0] = p[1]
-        #print('Parser: exp_booleana: ', p[0:])
 
     ###################### SENTENCIAS ###########################
 
@@ -649,9 +625,7 @@ class MyParser:
         '''
 
         pseudoAsm = ''
-
         if len(p) == 6: # si entra sin el else
-
             etiquetaTrue = 'jmp' + str(self.countJumps)
             self.countJumps += 1
             etiquetaFin = 'jmp' + str(self.countJumps)
@@ -669,7 +643,6 @@ class MyParser:
             pseudoAsm += etiquetaTrue + ':\n'
             pseudoAsm += p[4]
             pseudoAsm += etiquetaFin + ':\n'
-
             p[0] = pseudoAsm
 
         if len(p) == 8:  # si entra con el else
@@ -694,10 +667,7 @@ class MyParser:
             pseudoAsm += p[4]
             #fin
             pseudoAsm += etiquetaFin + ':\n'
-
             p[0] = pseudoAsm
-
-        #print('sentencia si: ',p[0:])
 
     def p_sentencia_mientras(self, p):
         # sentencia_mientras ::= MIENTRAS exp_booleana HACER proposicion proposiciones FMIENTRAS
@@ -706,7 +676,6 @@ class MyParser:
         '''
 
         pseudoAsm = ''
-
         etiquetaInicio = 'jmp' + str(self.countJumps)
         self.countJumps += 1
         etiquetaLogica = 'jmp' + str(self.countJumps)
@@ -729,7 +698,6 @@ class MyParser:
         pseudoAsm += p[4]
         pseudoAsm += 'Saltar ' + etiquetaInicio + '\n'
         pseudoAsm += etiquetaFin + ':\n'
-
         p[0] = pseudoAsm
 
     def p_sentencia_hacer_mientras(self, p):
@@ -749,6 +717,13 @@ class MyParser:
         '''
         sentencia_escribir :  ESCRIBIR LPAREN ID RPAREN
         '''
+        pseudoAsm = ''
+        if self.lookUpTable.get(p[3]) is None:
+            print('ERROR: Variable ' + str(p[3]) + 'no inicializada siendo leida')
+        else:
+            pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+            pseudoAsm += 'Escribir \n'
+        p[0] = pseudoAsm
 
     def p_error(self,p):
         if p:
@@ -763,5 +738,3 @@ class MyParser:
 
     def test(self, data):
         self.parser.parse(data)
-        #print('VARIABLES INICIALIZADAS TOTALES:', self.lookUpTable)
-        #print('\nALGORITMO FINAL:\n', self.resultAsm)

@@ -24,6 +24,7 @@ class Machine:
             'Restar': '011000000010',
             'Mult': '011000000011',
             'Div': '011000000100',
+            'Escribir': '1111'
         }
         self.registers = {
             'A': '00',
@@ -102,7 +103,7 @@ class Machine:
                 instruccion_actual_completa = re.sub(f"^{instruction[1]}", "", instruccion_actual_completa)
                 break
 
-        #print('Instrucción actual: ', self.instruccion_actual_type, 'linea: ',self.instruccion_actual, 'Instruccion completa: ', instruccion_actual_completa)
+        # print('Instrucción actual: ', self.instruccion_actual_type, 'linea: ',self.instruccion_actual, 'Instruccion completa: ', instruccion_actual_completa)
         # Como tengo guardadas las cosas en ram, es mas facil operarlas
 
         #Obtengo el registro en caso de que las operaciones involucren un registro en el primer argumento
@@ -110,7 +111,7 @@ class Machine:
             registro = instruccion_actual_completa[:2]
             indexRegistro = self.registros[registro]
 
-        if len(instruccion_actual_completa[:2]) == 2 and  len(instruccion_actual_completa[2:4]) == 2:
+        if len(instruccion_actual_completa[:2]) == 2 and len(instruccion_actual_completa[2:4]) == 2:
             registro_1 = self.registros[instruccion_actual_completa[:2]]
             registro_2 = self.registros[instruccion_actual_completa[2:4]]
             contenido_registro_1 = self.table_registros[registro_1][1]
@@ -185,6 +186,10 @@ class Machine:
                 self.table_unidad_control[0] = '1111111111111111'
                 self.table_unidad_control[1] = '1111111111111111'
                 return
+
+            case 'Escribir':  # printea el registro A en decimal supongo
+                print('Salida: ', self.table_registros[0][1])
+
 
         # actualiza la instruccion actual
         self.instruccion_actual_ram = self.table_ram[self.instruccion_actual]
