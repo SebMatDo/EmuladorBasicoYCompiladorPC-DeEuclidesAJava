@@ -24,9 +24,9 @@ machine.compile(data)
 
 
 
-# # Inicializar la aplicación
-# app = QApplication(sys.argv)
-# window = Window(machine)
-# window.show()
-# sys.exit(app.exec())
+# Inicializar la aplicación
+app = QApplication(sys.argv)
+window = Window(machine)
+window.show()
+sys.exit(app.exec())
 

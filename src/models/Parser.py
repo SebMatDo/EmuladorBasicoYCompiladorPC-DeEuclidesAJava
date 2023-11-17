@@ -22,7 +22,7 @@ class MyParser:
     tokens = MyLexer.tokens
 
     precedence = ( # Aca va la precedencia de tokens
-        ('nonassoc', 'MENOR', 'MAYOR'),  # Nonassociative
+        #('nonassoc', 'MENOR', 'MAYOR'),  # Nonassociative
         ('left', 'SUMA', 'RESTA'),
         ('left', 'MULT', 'DIV'),
         ('left', 'POTENCIA'),
@@ -67,7 +67,7 @@ class MyParser:
         proposiciones : proposicion proposiciones
         | empty
         '''
-        print('Parser: se identifica unas proposiciones', p[0:])
+        #print('Parser: se identifica unas proposiciones', p[0:])
 
 
     def p_asignacion(self,p):
@@ -125,165 +125,221 @@ class MyParser:
 
 ####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
-    def p_operador_aritmetico(self, p):
-        # operador_aritmetico ::= MULT | DIV | SUMA | RESTA | POTENCIA
-        '''
-        operador_aritmetico : MULT
-        | DIV
-        | SUMA
-        | RESTA
-        | POTENCIA
-        '''
-
-        # devuelve el tipo de operacion
-        p[0] = p[1]
-
     def p_factor_aritmetico(self, p):
         # factor_aritmetico ::=  '(' exp_aritmetica ')' | NUM_ENTERO | NUM_DECIMAL
         # factor_aritmetico_id ::= factor_aritmetico | ID
         '''
-        factor_aritmetico : LPAREN exp_aritmetica RPAREN
-        | NUM_ENTERO
+        factor_aritmetico : NUM_ENTERO
         | NUM_DECIMAL
-        factor_aritmetico_id : factor_aritmetico
-        | ID
         '''
-        # devuelve el valor del factor, p[2] si es un exparitmetico entre parentesis y p[1] de resto
+
+        # si es una expresion aritmetica tenemos problemas pero toca solucionarlas.
+        #devuelve el valor del factor, p[2] si es un exparitmetico entre parentesis y p[1] de resto
         if len(p) == 4:
             p[0] = p[2]
         else:
             p[0] = p[1]
-        print('Factor aritmetico: ', p[0:])
-
-
-    def p_operaciones_aritmeticas(self, p):
-        # operaciones_aritmeticas ::= (operador_aritmetico factor_aritmetico)*
-        '''
-        operaciones_aritmeticas : operador_aritmetico factor_aritmetico operaciones_aritmeticas
-        | empty
-        '''
-
-        # esto permite que p[0] mantenga la recursion
-        # Aca solo puede haber numeros sin ids
-        pseudoAsm = ''
-        asmToAdd = ''
-
-        if len(p) == 4:  # con recursion
-            pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-            asmToAdd = p[3]
-
-        # dependiendo de la operacion se escribe una instrucción
-        match p[1]:
-            case '+':
-                pseudoAsm += 'Sumar A,B\n'
-            case '-':
-                pseudoAsm += 'Restar A,B\n'
-            case '*':
-                pseudoAsm += 'Mult A,B\n'
-            case '/':
-                pseudoAsm += 'Div A,B\n'
-            case '^': # Este es especial porque requiere un ciclo, x^y = y veces x
-                # Se comienzan a manejar saltos (etiquetas)
-                pseudoAsm += 'Copiar A,C\n'
-                pseudoAsm += 'CargarValor D,1\n'
-                pseudoAsm += 'Restar B,D\n'
-                etiqueta = 'jmp' + str(self.countJumps)
-                self.countJumps += 1
-                pseudoAsm += etiqueta + ':\n'
-                pseudoAsm += 'Mult A,C\n'
-                pseudoAsm += 'Restar B,D\n'
-                pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
-
-
-        pseudoAsm += asmToAdd
-        p[0] = pseudoAsm
-        print('ops aritmeticas: ', p[0:])
-
-
-    def p_operaciones_aritmeticas_id(self, p):
-        # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
-        '''
-        operaciones_aritmeticas_id : operador_aritmetico factor_aritmetico_id operaciones_aritmeticas_id
-        | operador_aritmetico factor_aritmetico_id
-        '''
-        # esto permite que p[0] mantenga la recursion
-        # aca puede haber IDS o numeros normales.
-        pseudoAsm = ''
-        asmToAdd = ''
-        isVar = self.lookUpTable.get(p[2]) is not None
-
-        if isVar:
-            numVar = str(self.lookUpTable[p[2]][1])
-            pseudoAsm += 'Cargar B,' + numVar + '\n'
-        else:
-            pseudoAsm += 'CargarValor B,' + p[2] + '\n'
-
-        if len(p) == 4:  # con recursion
-            asmToAdd = p[3]
-
-        # dependiendo de la operacion se escribe una instrucción
-        match p[1]:
-            case '+':
-                pseudoAsm += 'Sumar A,B\n'
-            case '-':
-                pseudoAsm += 'Restar A,B\n'
-            case '*':
-                pseudoAsm += 'Mult A,B\n'
-            case '/':
-                pseudoAsm += 'Div A,B\n'
-            case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
-                # Se comienzan a manejar saltos (etiquetas)
-                pseudoAsm += 'Copiar A,C\n'
-                pseudoAsm += 'CargarValor D,1\n'
-                pseudoAsm += 'Restar B,D\n'
-                etiqueta = 'jmp' + str(self.countJumps)
-                self.countJumps += 1
-                pseudoAsm += etiqueta + ':\n'
-                pseudoAsm += 'Mult A,C\n'
-                pseudoAsm += 'Restar B,D\n'
-                pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
-
-        pseudoAsm += asmToAdd
-        p[0] = pseudoAsm
-
-        print('ops aritmeticas con id: ', p[0:])
+        #print('Factor aritmetico: ', p[0:])
+    #
+    # def p_factor_aritmetico_id(self, p):
+    #     '''
+    #     factor_aritmetico_id: factor_aritmetico
+    #     | ID
+    #     '''
+    #
+    # def p_operaciones_aritmeticas_id(self, p):
+    #     # operaciones_aritmeticas_id ::= ( operador_aritmetico factor_aritmetico_id )+
+    #     '''
+    #     operaciones_aritmeticas_id : operador_aritmetico factor_aritmetico_id operaciones_aritmeticas_id
+    #     | operador_aritmetico factor_aritmetico_id
+    #     '''
+    #     # esto permite que p[0] mantenga la recursion
+    #     # aca puede haber IDS o numeros normales.
+    #     pseudoAsm = ''
+    #     asmToAdd = ''
+    #     isVar = self.lookUpTable.get(p[2]) is not None
+    #
+    #     if isVar:
+    #         numVar = str(self.lookUpTable[p[2]][1])
+    #         pseudoAsm += 'Cargar B,' + numVar + '\n'
+    #     else:
+    #         pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+    #
+    #     if len(p) == 4:  # con recursion
+    #         asmToAdd = p[3]
+    #
+    #     # dependiendo de la operacion se escribe una instrucción
+    #     match p[1]:
+    #         case '+':
+    #             pseudoAsm += 'Sumar A,B\n'
+    #         case '-':
+    #             pseudoAsm += 'Restar A,B\n'
+    #         case '*':
+    #             pseudoAsm += 'Mult A,B\n'
+    #         case '/':
+    #             pseudoAsm += 'Div A,B\n'
+    #         case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
+    #             # Se comienzan a manejar saltos (etiquetas)
+    #             pseudoAsm += 'Copiar A,C\n'
+    #             pseudoAsm += 'CargarValor D,1\n'
+    #             pseudoAsm += 'Restar B,D\n'
+    #             etiqueta = 'jmp' + str(self.countJumps)
+    #             self.countJumps += 1
+    #             pseudoAsm += etiqueta + ':\n'
+    #             pseudoAsm += 'Mult A,C\n'
+    #             pseudoAsm += 'Restar B,D\n'
+    #             pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+    #
+    #     pseudoAsm += asmToAdd
+    #     p[0] = pseudoAsm
+    #
+    #     print('ops aritmeticas con id: ', p[0:])
 
     def p_termino_aritmetico(self, p):
         # termino_aritmetico ::= factor_aritmetico ( operaciones_aritmeticas | operaciones_aritmeticas_id )
         # | ID operaciones_aritmeticas_id
         '''
-        termino_aritmetico : factor_aritmetico operaciones_aritmeticas
-        | ID operaciones_aritmeticas_id
-        | factor_aritmetico operaciones_aritmeticas_id
+        termino_aritmetico : LPAREN termino_aritmetico RPAREN
+        | termino_aritmetico POTENCIA termino_aritmetico
+        | termino_aritmetico MULT termino_aritmetico
+        | termino_aritmetico DIV termino_aritmetico
+        | termino_aritmetico SUMA termino_aritmetico
+        | termino_aritmetico RESTA termino_aritmetico
+        | factor_aritmetico
         '''
 
+        # ahora la logica esta aca para poder manejar mejor las cargas
+        # ACA no podrán venir IDS
         pseudoAsm = ''
-        asmToAdd = p[2]
 
-        if self.lookUpTable.get(p[1]) is None:  # si p[1] no es id entonces lo carga en A
-            pseudoAsm += 'CargarValor A,' + p[1] + '\n'
-        else: # si es ID lo carga desde la ram
-            pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
-        pseudoAsm += asmToAdd # al final agrega lo que traen los hijos
+        if p[1] == '(':
+            print('ACA PARRRRRR')
+            if not str.isnumeric(p[2]):
+                pseudoAsm += p[2]
+                #pseudoAsm += 'Copiar A,D\n'
+                p[0] = pseudoAsm
+            else:
+                p[0] = p[2]
+            print('ACA final PAAAAARRRR')
 
-        p[0] = pseudoAsm
-        print('terminos aritmeticos: ', p[0:])
+            print('aa ', p[0:])
+            return p[0]
+
+        if len(p) == 4:  # si viene así hay cosas, si no entonces es un factor solito.
+
+            # se añade lo que se traia de antes
+            if not str.isnumeric(p[1]) and str.isnumeric(p[3]):
+                pseudoAsm += p[1]
+
+            if not str.isnumeric(p[3]) and str.isnumeric(p[1]):
+                pseudoAsm += p[3]
+                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque es una exp, copiamos su registro a B
+
+            if not str.isnumeric(p[3]) and not str.isnumeric(p[1]):
+                # el problema esta en que se reescriba el valor A cuando ambos factores no son numericos
+                pseudoAsm += p[1]
+                pseudoAsm += 'Copiar A,D\n'
+                pseudoAsm += p[3]
+                pseudoAsm += 'Copiar A,B\n'
+                pseudoAsm += 'Copiar D,A\n'
+
+            if str.isnumeric(p[1]):  # verificar si el factor es numerico
+                pseudoAsm += 'CargarValor A,' + p[1] + '\n'  # si es numerico carga su valor en A
+
+            if str.isnumeric(p[3]):  # verificar si el factor es numerico
+                pseudoAsm += 'CargarValor B,' + p[3] + '\n'  # si es numerico carga su valor en B
+
+            # dependiendo de la operacion se escribe una instrucción
+            match p[2]:
+                case '+':
+                    pseudoAsm += 'Sumar A,B\n'
+                case '-':
+                    pseudoAsm += 'Restar A,B\n'
+                case '*':
+                    pseudoAsm += 'Mult A,B\n'
+                case '/':
+                    pseudoAsm += 'Div A,B\n'
+                case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
+                    # Se comienzan a manejar saltos (etiquetas)
+                    pseudoAsm += 'Copiar A,C\n'
+                    pseudoAsm += 'CargarValor D,1\n'
+                    pseudoAsm += 'Restar B,D\n'
+                    etiqueta = 'jmp' + str(self.countJumps)
+                    self.countJumps += 1
+                    pseudoAsm += etiqueta + ':\n'
+                    pseudoAsm += 'Mult A,C\n'
+                    pseudoAsm += 'Restar B,D\n'
+                    pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+
+            p[0] = pseudoAsm
+        elif len(p) == 2:  # si el factor viene solito
+            p[0] = p[1]
 
 
+        print('term aritm ', p[0:])
+
+    #
+    # def p_termino_aritmetico_id(self, p):
+    #     '''
+    #     termino_aritmetico_id : ID operaciones_aritmeticas_id
+    #     | factor_aritmetico_id operaciones_aritmeticas_id
+    #     '''
+
+        # ahora la logica esta aca para poder manejar mejor las cargas, siempre len p == 3
+
+        # # Aca solo puede haber numeros sin ids
+        # pseudoAsm = ''
+        #
+        # if len(p) == 4:  # si viene así hay cosas, si no es, empty
+        #     pseudoAsm += p[3]  # añadimos la recursion
+        #
+        #     if str.isnumeric(p[2]):  # verificar si el factor es numerico
+        #         pseudoAsm += 'CargarValor B,' + p[2] + '\n'  # si es numerico carga su valor en B
+        #     else:
+        #         pseudoAsm += p[2]  # añadimos lo que traia la exp del factor p[2]
+        #         pseudoAsm += 'Copiar B,A\n'  # si no es numerico es porque es una exp, copiamos su registro a B
+        #
+        # # dependiendo de la operacion se escribe una instrucción
+        # match p[1]:
+        #     case '+':
+        #         pseudoAsm += 'Sumar A,B\n'
+        #     case '-':
+        #         pseudoAsm += 'Restar A,B\n'
+        #     case '*':
+        #         pseudoAsm += 'Mult A,B\n'
+        #     case '/':
+        #         pseudoAsm += 'Div A,B\n'
+        #     case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
+        #         # Se comienzan a manejar saltos (etiquetas)
+        #         pseudoAsm += 'Copiar A,C\n'
+        #         pseudoAsm += 'CargarValor D,1\n'
+        #         pseudoAsm += 'Restar B,D\n'
+        #         etiqueta = 'jmp' + str(self.countJumps)
+        #         self.countJumps += 1
+        #         pseudoAsm += etiqueta + ':\n'
+        #         pseudoAsm += 'Mult A,C\n'
+        #         pseudoAsm += 'Restar B,D\n'
+        #         pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+        #
+        # p[0] = pseudoAsm
+        # p[0] = p[1] + p[2]
+        pseudoAsm = ''
+        # asmToAdd = p[2]
+        #
+        # if self.lookUpTable.get(p[1]) is None:  # si p[1] no es id entonces lo carga en A
+        #     pseudoAsm += 'CargarValor A,' + p[1] + '\n'
+        # else: # si es ID lo carga desde la ram
+        #     pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+        # pseudoAsm += asmToAdd  # agrega lo que traen los hijos
+        # p[0] = pseudoAsm
 
     def p_exp_arimetica(self, p):
         # exp_aritmetica ::= termino_aritmetico ( operador_aritmetico termino_aritmetico )*
         '''
         exp_aritmetica : termino_aritmetico
-        | termino_aritmetico operador_aritmetico exp_aritmetica
         '''
-        # si len = 2 entonces es un solo termino si no entonces son muchos terminos, se guarda la recursion en p[0]
-        if len(p) == 2:
-            p[0] = p[1]
-        elif len(p) == 4:
-            p[0] = p[1] + p[2] + p[3]
-
-        print("Parser exp arit: ",p[0:])
+        p[0] = p[1]
+        #print("Parser exp arit: ",p[0:])
 
     ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -308,7 +364,7 @@ class MyParser:
         | exp_aritmetica operador_relacional ID
         | ID operador_relacional ID
         '''
-
+        print('FACTOR RELACIONAL')
 
     ####################### APARADO PARA RECONOCER EXPRESIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
@@ -334,6 +390,7 @@ class MyParser:
         | ID
         | NEGAR ID
         '''
+        print('FACTOR BOOLEANO')
 
     def p_operaciones_booleanas(self, p):
         # operaciones_boolenas ::= ( operador_booleano factor_booleano )*
