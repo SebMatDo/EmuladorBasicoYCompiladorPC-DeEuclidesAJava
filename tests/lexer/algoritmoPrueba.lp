@@ -3,13 +3,12 @@
 fun
     var a : entero;
     var b : entero;
-    a = -3;
+    var c : entero;
+    var d: entero;
+    a = -10;
     b = 3;
-    a = a-b;
-    b = -10 - 12;
-    a = -1 --1;
-    ##b = 2;
-    ##a = (a+3)*2 + 5*6 + (b-4);
+    c = (( 24/b )/(-b - 1))^(2*2);  ## Final boss operation
+    ##d = -a;
 ffun
 
 ### fin algoritmo

@@ -222,15 +222,35 @@ class MyParser:
         | termino_aritmetico SUMA termino_aritmetico
         | termino_aritmetico RESTA termino_aritmetico
         | factor_aritmetico
+        | RESTA factor_aritmetico
         '''
 
         # ahora la logica esta aca para poder manejar mejor las cargas
         pseudoAsm = ''
+        print(p[0:])
+        if p[1] == '-':
+
+            if isNum(p[2]):
+                pseudoAsm += 'CargarValor B,' + p[2] + '\n'
+                pseudoAsm += 'CargarValor A,0\n Restar A,B\n'
+            else: # si es una var o asm
+                if self.lexerLookUpTable.get(p[2]) is None:  # si el str no es var
+                    pseudoAsm += p[2]
+                    pseudoAsm += 'Copiar A,B\n CargarValor A,0\n Restar A,B\n'
+
+                else: # si es var
+                    if self.lookUpTable.get(p[2]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[2])
+
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[2])[1]) + '\n'
+                    pseudoAsm += 'CargarValor A,0\n Restar A,B\n'
+            p[0] = pseudoAsm
+            return p[0]
+            print('RRRRRRESTA')
 
         if p[1] == '(': # si viene en parentesis
             if not isNum(p[2]): # y no es numerico
                 pseudoAsm += p[2] # se copia lo que trae
-                #todo verificar con variables
                 p[0] = pseudoAsm
             else:
                 p[0] = p[2] # si esnumerico se devuelve asi solito
@@ -240,19 +260,17 @@ class MyParser:
             p[0] = p[1]
 
         if len(p) == 4:  # si viene así hay cosas.
-
-            # se añade lo que se traia de antes
             if not isNum(p[1]) and isNum(p[3]): # caso (var or asm) op_aritmetico num, o llevamos al otro caso
-                #swap
-                temp = p[1]
-                temp2 = p[3]
-                p[3] = temp
-                p[1] = temp2
-
-            # ya que las variables o el asm siempre quedaran en p[3]
+                if self.lexerLookUpTable.get(p[1]) is None:  # si el str no es variable caso asm op num
+                    pseudoAsm += p[1]
+                else:  # si es una variable caso var op num
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
 
             if not isNum(p[3]) and isNum(p[1]): # caso num op_aritmetico (var or asm)
-                if self.lexerLookUpTable.get(p[3]) is None: # si el str no es variable
+                if self.lexerLookUpTable.get(p[3]) is None: # si el str no es variable caso num op asm
                     pseudoAsm += p[3]
                 else: # si es una variable caso num op var
                     if self.lookUpTable.get(p[3]) is None:
@@ -261,14 +279,14 @@ class MyParser:
                 pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
 
             if not isNum(p[3]) and not isNum(p[1]): # ambos factores son ASM o variables o una combinacion de ambos
-                if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None: # ambas asm
+                if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None: # asm op asm
                     pseudoAsm += p[1]
                     pseudoAsm += 'Copiar A,D\n'
                     pseudoAsm += p[3]
                     pseudoAsm += 'Copiar A,B\n'
                     pseudoAsm += 'Copiar D,A\n'
 
-                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is not None: # ambas son variabes
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is not None: # ambas son variabes var op var
                     if self.lookUpTable.get(p[3]) is None:
                         raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
                     if self.lookUpTable.get(p[1]) is None:
@@ -276,14 +294,13 @@ class MyParser:
                     pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
                     pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
 
-                if self.lexerLookUpTable.get(p[3]) is not None and self.lexerLookUpTable.get(p[1]) is None:  # solo la p[3] es variable
-                    # swap y pasa la variable a p[1]
-                    temp = p[1]
-                    temp2 = p[3]
-                    p[3] = temp
-                    p[1] = temp2
+                if self.lexerLookUpTable.get(p[3]) is not None and self.lexerLookUpTable.get(p[1]) is None:  # solo la p[3] es variable caso asm op var
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += p[1]
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
 
-                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is None: # solo la p[1] es variable
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is None: # solo la p[1] es variable caso var op asm
                     if self.lookUpTable.get(p[1]) is None:
                         raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[1])
                     pseudoAsm += p[3]
@@ -305,7 +322,7 @@ class MyParser:
                 case '*':
                     pseudoAsm += 'Mult A,B\n'
                 case '/':
-                    pseudoAsm += 'Div A,B\n'
+                    pseudoAsm += 'Div A,B \n' # se hizo una operacion inversa
                 case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
                     # se pasa el reg D (que puede contener info de otras operaciones con parentesis) a una variable protegida especial 0
                     pseudoAsm += 'Almacenar D, 0\n'
