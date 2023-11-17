@@ -2,7 +2,8 @@
 
 fun
     var a : entero;
-    a = (4 + 2 * (8) + 4)/(5 - 3/3) * 3 ;
+    var b : entero;
+    a = 4 + (2 + 2 * (3 - 1 * 2))+2^3/(3 - 3/3) * 2 + 2;
 ffun
 
 ### fin algoritmo

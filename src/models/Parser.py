@@ -11,9 +11,9 @@ class MyParser:
         self.lexer = lexer
         self.lookUpTable = {}
         self.resultAsm = ''
-        self.countVar = 0
+        self.countVar = 1
         self.lookUpJumps = {}
-        self.countJumps = 0
+        self.countJumps = 1
 
     # DESTRUCTOR
     def __del__(self):
@@ -260,6 +260,8 @@ class MyParser:
                 case '/':
                     pseudoAsm += 'Div A,B\n'
                 case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
+                    # se pasa el reg D (que puede contener info de otras operaciones con parentesis) a una variable protegida especial 0
+                    pseudoAsm += 'Almacenar D, 0\n'
                     # Se comienzan a manejar saltos (etiquetas)
                     pseudoAsm += 'Copiar A,C\n'
                     pseudoAsm += 'CargarValor D,1\n'
@@ -270,6 +272,8 @@ class MyParser:
                     pseudoAsm += 'Mult A,C\n'
                     pseudoAsm += 'Restar B,D\n'
                     pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
+                    # al final vuelve a traer el antiguo registro D
+                    pseudoAsm += 'Cargar D, 0\n'
 
             p[0] = pseudoAsm
         elif len(p) == 2:  # si el factor viene solito
