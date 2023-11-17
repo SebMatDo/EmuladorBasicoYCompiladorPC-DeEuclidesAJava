@@ -1,14 +1,18 @@
 ###### SE INICIALIZA UN ALGORITMO muy simple para pruebas #####
 
 fun
-    var a : booleano;
-    var b : booleano;
-    var c : booleano;
-    a = verdadero;
-    b = falso && verdadero; ## falso
-    a = a || b;  ## verdadero
-    c = (a || b && b || (a && verdadero || verdadero || falso) || falso);
-    ## c = (verdadero || falso && falso || verdadero || falso) finalmente da verdadero
+
+    var a : entero;
+    var b : entero;
+
+    a = 45;
+    b = 4;
+
+    si b == 5 entonces
+        a = 3 + 3 * 2 + 1;
+    sino
+        a = -10 + 1 - 20;
+    fsi;
 
 ffun
 
