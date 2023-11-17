@@ -10,6 +10,7 @@ class MyParser:
         self.parser = yacc.yacc(module=self)
         self.lexer = lexer
         self.lookUpTable = {}
+        self.lexerLookUpTable = MyLexer.lookUpTable
         self.resultAsm = ''
         self.countVar = 1
         self.lookUpJumps = {}
@@ -83,10 +84,24 @@ class MyParser:
         # Si intenta usar una variable no inicializada
         pseudoAsm = ''
         if self.lookUpTable.get(p[1]) is None:
-            print('ERROR: Variable no inicializada siendo asignada', p[1])
+            print('ERROR: Variable INICIAL no inicializada siendo asignada', p[1])
         else:
             # todo verificacion de tipos
-            pseudoAsm += p[3]
+
+            # si es de tipo a = b hace esto
+            # if p[3] == id
+            if self.lexerLookUpTable.get(p[3]) is not None:
+                # Si es una variable de lexer pero no ha sido inicializada
+                # Si no se hace esta comprobacion se agregaria un NONE Y rompe el programa
+                if self.lookUpTable.get(p[3]) is None:
+                    print('ERROR VARIABLE 2 NO INICIALIZADA')
+                else:
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+
+            else: # if p[3] != id
+                # entonces esto es de tipo a = expresion
+                # ahora toca mirar si lo que llega es un asm o un factor.
+                pseudoAsm += p[3]
             pseudoAsm += 'Almacenar A,' + str(self.lookUpTable[p[1]][1]) + '\n' #se almacena la variable en la ram. usando el lookup para obtener su numero especifico
             p[0] = pseudoAsm
             print('Parser: se identifica una asignacion\n', p[0])
@@ -126,19 +141,19 @@ class MyParser:
 ####################### APARADO PARA RECONOCER EXPRESIONES ARITMETICAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 
     def p_factor_aritmetico(self, p):
-        # factor_aritmetico ::=  '(' exp_aritmetica ')' | NUM_ENTERO | NUM_DECIMAL
         # factor_aritmetico_id ::= factor_aritmetico | ID
         '''
         factor_aritmetico : NUM_ENTERO
         | NUM_DECIMAL
+        | ID
         '''
 
-        # si es una expresion aritmetica tenemos problemas pero toca solucionarlas.
-        #devuelve el valor del factor, p[2] si es un exparitmetico entre parentesis y p[1] de resto
-        if len(p) == 4:
-            p[0] = p[2]
+        # Verificacion de decimales
+        if type(p[1]) == float:
+            print('ERROR EL ANALIZADOR SINTACTICO DETECTA UN DECIMAL, se tomará solo la parte entera')
+            p[0] = str(int(p[1]))
         else:
-            p[0] = p[1]
+            p[0] = str(p[1])
         #print('Factor aritmetico: ', p[0:])
     #
     # def p_factor_aritmetico_id(self, p):
@@ -209,39 +224,70 @@ class MyParser:
         '''
 
         # ahora la logica esta aca para poder manejar mejor las cargas
-        # ACA no podrán venir IDS
         pseudoAsm = ''
 
-        if p[1] == '(':
-            print('ACA PARRRRRR')
-            if not str.isnumeric(p[2]):
-                pseudoAsm += p[2]
-                #pseudoAsm += 'Copiar A,D\n'
+        if p[1] == '(': # si viene en parentesis
+            if not str.isnumeric(p[2]): # y no es numerico
+                pseudoAsm += p[2] # se copia lo que trae
+                #todo verificar con variables
                 p[0] = pseudoAsm
             else:
-                p[0] = p[2]
-            print('ACA final PAAAAARRRR')
-
-            print('aa ', p[0:])
+                p[0] = p[2] # si esnumerico se devuelve asi solito
             return p[0]
 
-        if len(p) == 4:  # si viene así hay cosas, si no entonces es un factor solito.
+        if len(p) == 2:  # si se toma la ruta de factor solito
+            p[0] = p[1]
+
+        if len(p) == 4:  # si viene así hay cosas.
 
             # se añade lo que se traia de antes
-            if not str.isnumeric(p[1]) and str.isnumeric(p[3]):
-                pseudoAsm += p[1]
+            if not str.isnumeric(p[1]) and str.isnumeric(p[3]): # caso (var or asm) op_aritmetico num, o llevamos al otro caso
+                #swap
+                temp = p[1]
+                temp2 = p[3]
+                p[3] = temp
+                p[1] = temp2
 
-            if not str.isnumeric(p[3]) and str.isnumeric(p[1]):
-                pseudoAsm += p[3]
-                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque es una exp, copiamos su registro a B
+            # ya que las variables o el asm siempre quedaran en p[3]
 
-            if not str.isnumeric(p[3]) and not str.isnumeric(p[1]):
-                # el problema esta en que se reescriba el valor A cuando ambos factores no son numericos
-                pseudoAsm += p[1]
-                pseudoAsm += 'Copiar A,D\n'
-                pseudoAsm += p[3]
-                pseudoAsm += 'Copiar A,B\n'
-                pseudoAsm += 'Copiar D,A\n'
+            if not str.isnumeric(p[3]) and str.isnumeric(p[1]): # caso num op_aritmetico (var or asm)
+                if self.lexerLookUpTable.get(p[3]) is None: # si el str no es variable
+                    pseudoAsm += p[3]
+                else: # si es una variable caso num op var
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+                pseudoAsm += 'Copiar A,B\n'  # si no es numerico es porque p[3] es una exp, copiamos su registro a B
+
+            if not str.isnumeric(p[3]) and not str.isnumeric(p[1]): # ambos factores son ASM o variables o una combinacion de ambos
+                if self.lexerLookUpTable.get(p[1]) is None and self.lexerLookUpTable.get(p[3]) is None: # ambas asm
+                    pseudoAsm += p[1]
+                    pseudoAsm += 'Copiar A,D\n'
+                    pseudoAsm += p[3]
+                    pseudoAsm += 'Copiar A,B\n'
+                    pseudoAsm += 'Copiar D,A\n'
+
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is not None: # ambas son variabes
+                    if self.lookUpTable.get(p[3]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[3])
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[1])
+                    pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+
+                if self.lexerLookUpTable.get(p[3]) is not None and self.lexerLookUpTable.get(p[1]) is None:  # solo la p[3] es variable
+                    # swap y pasa la variable a p[1]
+                    temp = p[1]
+                    temp2 = p[3]
+                    p[3] = temp
+                    p[1] = temp2
+
+                if self.lexerLookUpTable.get(p[1]) is not None and self.lexerLookUpTable.get(p[3]) is None: # solo la p[1] es variable
+                    if self.lookUpTable.get(p[1]) is None:
+                        raise Exception('ERROR: La variable no ha sido inicializada y por lo tanto no se puede proseguir', p[1])
+                    pseudoAsm += p[3]
+                    pseudoAsm += 'Cargar B,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
+
 
             if str.isnumeric(p[1]):  # verificar si el factor es numerico
                 pseudoAsm += 'CargarValor A,' + p[1] + '\n'  # si es numerico carga su valor en A
@@ -276,74 +322,20 @@ class MyParser:
                     pseudoAsm += 'Cargar D, 0\n'
 
             p[0] = pseudoAsm
-        elif len(p) == 2:  # si el factor viene solito
-            p[0] = p[1]
-
 
         print('term aritm ', p[0:])
 
-    #
-    # def p_termino_aritmetico_id(self, p):
-    #     '''
-    #     termino_aritmetico_id : ID operaciones_aritmeticas_id
-    #     | factor_aritmetico_id operaciones_aritmeticas_id
-    #     '''
-
-        # ahora la logica esta aca para poder manejar mejor las cargas, siempre len p == 3
-
-        # # Aca solo puede haber numeros sin ids
-        # pseudoAsm = ''
-        #
-        # if len(p) == 4:  # si viene así hay cosas, si no es, empty
-        #     pseudoAsm += p[3]  # añadimos la recursion
-        #
-        #     if str.isnumeric(p[2]):  # verificar si el factor es numerico
-        #         pseudoAsm += 'CargarValor B,' + p[2] + '\n'  # si es numerico carga su valor en B
-        #     else:
-        #         pseudoAsm += p[2]  # añadimos lo que traia la exp del factor p[2]
-        #         pseudoAsm += 'Copiar B,A\n'  # si no es numerico es porque es una exp, copiamos su registro a B
-        #
-        # # dependiendo de la operacion se escribe una instrucción
-        # match p[1]:
-        #     case '+':
-        #         pseudoAsm += 'Sumar A,B\n'
-        #     case '-':
-        #         pseudoAsm += 'Restar A,B\n'
-        #     case '*':
-        #         pseudoAsm += 'Mult A,B\n'
-        #     case '/':
-        #         pseudoAsm += 'Div A,B\n'
-        #     case '^':  # Este es especial porque requiere un ciclo, x^y = y veces x
-        #         # Se comienzan a manejar saltos (etiquetas)
-        #         pseudoAsm += 'Copiar A,C\n'
-        #         pseudoAsm += 'CargarValor D,1\n'
-        #         pseudoAsm += 'Restar B,D\n'
-        #         etiqueta = 'jmp' + str(self.countJumps)
-        #         self.countJumps += 1
-        #         pseudoAsm += etiqueta + ':\n'
-        #         pseudoAsm += 'Mult A,C\n'
-        #         pseudoAsm += 'Restar B,D\n'
-        #         pseudoAsm += 'SaltarSiPos ' + etiqueta + '\n'
-        #
-        # p[0] = pseudoAsm
-        # p[0] = p[1] + p[2]
-        pseudoAsm = ''
-        # asmToAdd = p[2]
-        #
-        # if self.lookUpTable.get(p[1]) is None:  # si p[1] no es id entonces lo carga en A
-        #     pseudoAsm += 'CargarValor A,' + p[1] + '\n'
-        # else: # si es ID lo carga desde la ram
-        #     pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[1])[1]) + '\n'
-        # pseudoAsm += asmToAdd  # agrega lo que traen los hijos
-        # p[0] = pseudoAsm
 
     def p_exp_arimetica(self, p):
-        # exp_aritmetica ::= termino_aritmetico ( operador_aritmetico termino_aritmetico )*
         '''
         exp_aritmetica : termino_aritmetico
         '''
-        p[0] = p[1]
-        #print("Parser exp arit: ",p[0:])
+        # Verifica si lo que llega como exp aritmetica es un ASM o un numero
+        if str.isnumeric(p[1]) or str.isdecimal(p[1]):
+            p[0] = 'CargarValor A,' + p[1] + '\n'
+        else:
+            p[0] = p[1]
+        print("Parser exp arit: ",p[0:])
 
     ####################### APARTADO PARA RECONOCER RELACIONES BOOLEANAS CON PARENTESIS Y CUALQUIER LONGITUD ####################
 

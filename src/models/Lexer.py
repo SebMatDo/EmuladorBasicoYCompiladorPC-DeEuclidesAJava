@@ -149,17 +149,17 @@ class MyLexer():
 
     @lex.TOKEN(NUM_DECIMAL)
     def t_NUM_DECIMAL(self, t):
-        #t.value = float(t.value)
+        t.value = float(t.value)
         return t
 
     @lex.TOKEN(NUM_ENTERO)
     def t_NUM_ENTERO(self, t):
-        #t.value = int(t.value)
+        t.value = int(t.value)
         return t
 
     @lex.TOKEN(VALOR_CADENA)
     def t_VALOR_CADENA(self, t):
-        t.value = str(t.value)
+        t.value = [t.value, 'CADENA']
         return t
 
     @lex.TOKEN(ID)
