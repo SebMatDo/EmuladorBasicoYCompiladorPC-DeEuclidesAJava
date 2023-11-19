@@ -16,8 +16,8 @@ class Assembler:
             r'(?P<Parar>Parar)|(?P<Cargar>Cargar%s,%s)|(?P<CargarValor>CargarValor%s,%s)|(?P<Almacenar>Almacenar%s,%s)|'
             r'(?P<SaltarSiCero>SaltarSiCero%s)|(?P<SaltarSiNeg>SaltarSiNeg%s)|(?P<SaltarSiPos>SaltarSiPos%s)|'
             r'(?P<SaltarSiDes>SaltarSiDes%s)|(?P<Saltar>Saltar%s)|(?P<Copiar>Copiar%s,%s)|(?P<Sumar>Sumar%s,%s)|'
-            r'(?P<Restar>Restar%s,%s)|(?P<Mult>Mult%s,%s)|(?P<Div>Div%s,%s)|(?P<Label>%s)|'
-            r'(?P<Escribir>Escribir)|(?P<EscLetra>EscLetra)|(?P<LeerIO>LeerIO)'%
+            r'(?P<Restar>Restar%s,%s)|(?P<Mult>Mult%s,%s)|(?P<Div>Div%s,%s)|(?P<Label>%s)|(?P<LeerIO>LeerIO%s?)|'
+            r'(?P<Escribir>Escribir)|(?P<EscLetra>EscLetra)'%
             (
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['variable'],
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['valor'],
@@ -33,7 +33,7 @@ class Assembler:
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['registro'],
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['registro'],
                 self.basic_regular_expresion['label'],
-
+                self.basic_regular_expresion['registro']
             ), re.IGNORECASE
         )
 
@@ -172,7 +172,10 @@ class Assembler:
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['Escribir'] + '00'
                 
                 case 'LeerIO':
-                    virtualMachine.object_code[linea] = virtualMachine.opcodes['LeerIO'] + '00'
+                    print("LeerIO")
+                    values = statement.group().replace('LeerIO', '').split(',')
+                    registro = values[0]
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['LeerIO'] + (virtualMachine.registers[registro] if registro != '' else '')
 
                 case 'EscLetra':
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['EscLetra'] + '00'

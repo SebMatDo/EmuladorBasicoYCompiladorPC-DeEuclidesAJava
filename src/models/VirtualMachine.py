@@ -196,16 +196,19 @@ class Machine:
             
             case 'LeerIO':  # lee el input y lo guarda en el registro A
                 # Verifica si el valor en el input es un número
-                if not isNum(self.input.get_input()):
-                    print('ERROR: El valor ingresado no es un número, se guardará un 0 y el resultado puede no ser el deseado')
-                    self.table_registros[0][1] = '0'
-                    self.table_registros[0][0] = '0000000000000000'
+                if instruccion_actual_completa:
+                    registro= self.registros[instruccion_actual_completa[:2]]
+                    if isNum(self.input.get_input()):
+                        self.table_registros[registro][1] = self.input.get_input()
+                        self.table_registros[registro][0] = decimalToBinary(int(self.table_registros[0][1]))                            
                 else:
-                    self.table_registros[0][1] = self.input.get_input()
-                    self.table_registros[0][0] = decimalToBinary(int(self.table_registros[0][1]))
+                    valorCadena = self.input.get_input()
+                    for i in range(0, min(len(valorCadena), 10)):
+                        self.table_ram[i+1] = decimalToBinary(ord(valorCadena[i]))
+                    
 
             case 'EscLetra':  # printea el registro A
-                if (chr(self.table_registros[0][1]) != '' and chr(self.table_registros[0][1]) != '\n'):
+                if (self.table_registros[0][1] != '0'):
                     print('Salida: ', chr(self.table_registros[0][1]))
 
 
@@ -222,6 +225,8 @@ class Machine:
 
     def reiniciar(self):
         self.initializeAllInCeros()
+        self.code = ""
+        self.hight_level_code = ""
         self.instruccion_actual = 0
         self.instruccion_siguiente = 0
 

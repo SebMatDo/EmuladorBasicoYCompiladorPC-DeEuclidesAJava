@@ -734,7 +734,11 @@ class MyParser:
         if self.lookUpTable.get(p[3]) is None:
             print('ERROR: Variable ' + str(p[3]) + 'no inicializada siendo leida')
         else:
-            pseudoAsm += 'LeerIO \n'
+            match self.lookUpTable.get(p[3])[0]:
+                case 'cadena':
+                    pseudoAsm += 'LeerIO\n'
+                case _:
+                    pseudoAsm += 'LeerIO A\n'
             pseudoAsm += 'Almacenar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
             p[0] = pseudoAsm
 
