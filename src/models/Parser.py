@@ -41,9 +41,11 @@ class MyParser:
         '''
         algoritmo : FUN proposiciones FFUN
         '''
-        print('Se identifica un algoritmo completo exitoso')
+    
         pseudoAsm = p[2]
-        pseudoAsm += 'Parar'
+        if pseudoAsm:
+            print('Se identifica un algoritmo completo exitoso')
+            pseudoAsm += 'Parar'
         self.resultAsm = pseudoAsm
 
     def p_empty(self,p):
@@ -89,7 +91,7 @@ class MyParser:
         # Si intenta usar una variable no inicializada manda error
         pseudoAsm = ''
         if self.lookUpTable.get(p[1]) is None:
-            print('ERROR: Variable ' +  str(p[1]) + 'no inicializada siendo asignada')
+            print('ERROR: Variable ' +  str(p[1]) + ' no inicializada siendo asignada')
         else:
             # todo verificacion de tipos
 
@@ -711,6 +713,13 @@ class MyParser:
         '''
         sentencia_leer : LEER LPAREN ID RPAREN
         '''
+        pseudoAsm = ''
+        pseudoAsm += 'LeerIO \n'
+        if self.lookUpTable.get(p[3]) is None:
+            print('ERROR: Variable ' + str(p[3]) + 'no inicializada siendo leida')
+        else:
+            pseudoAsm += 'Almacenar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+            p[0] = pseudoAsm
 
     def p_sentencia_escribir(self, p):
         # sentencia_escribir ::= ESCRIBIR '(' ID ')'

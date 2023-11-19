@@ -16,6 +16,7 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
     #Actualiza el estado de la máquina que se muestra con la máquina emulada
     def updateStateMachine(self):
         for window in self.machine.windows:
+            window.machine.leer_input(window.textEditInput.toPlainText())
             [window.table_ram.setItem(i, 0, QTableWidgetItem(window.machine.table_ram[i])) for i in range(0, 1024)]
             [window.table_registros.setItem(i, 0, QTableWidgetItem(window.machine.table_registros[i][0])) for i in range(0, 4)]
             [window.table_registros.setItem(i, 1, QTableWidgetItem(str(window.machine.table_registros[i][1]))) for i in range(0, 4)]

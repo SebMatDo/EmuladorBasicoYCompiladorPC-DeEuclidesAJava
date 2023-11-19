@@ -1,9 +1,10 @@
 import re
-from src.utils.convertions import decimalToBinary, binaryToDec
+from src.utils.convertions import decimalToBinary, binaryToDec, isNum
 from src.models.Assembler import Assembler
 from src.models.LinkerLoader import LinkerLoader
 from src.models.consola import CapturadorSalida
 from src.models.Compiler import Compiler
+from src.models.InputConsola import InputConsola
 
 class Machine:
 
@@ -24,7 +25,8 @@ class Machine:
             'Restar': '011000000010',
             'Mult': '011000000011',
             'Div': '011000000100',
-            'Escribir': '1111'
+            'Escribir': '1111',
+            'LeerIO': '0111'
         }
         self.registers = {
             'A': '00',
@@ -39,6 +41,7 @@ class Machine:
         self.use_console = use_console
         if use_console:
             self.console = CapturadorSalida()
+        self.input = InputConsola()
         self.code = code
         self.hight_level_code = ''
         self.instruccion_actual = instruccion_actual
@@ -189,6 +192,16 @@ class Machine:
 
             case 'Escribir':  # printea el registro A en decimal supongo
                 print('Salida: ', self.table_registros[0][1])
+            
+            case 'LeerIO':  # lee el input y lo guarda en el registro A
+                # Verifica si el valor en el input es un número
+                if not isNum(self.input.get_input()):
+                    print('ERROR: EL INPUT NO ES UN NUMERO, SE HA PUESTO UN 0')
+                    self.table_registros[0][1] = '0'
+                    self.table_registros[0][0] = '0000000000000000'
+                else:
+                    self.table_registros[0][1] = self.input.get_input()
+                    self.table_registros[0][0] = decimalToBinary(int(self.table_registros[0][1]))
 
 
         # actualiza la instruccion actual
@@ -218,3 +231,7 @@ class Machine:
     def compile(self, hight_level_code):
         self.hight_level_code = hight_level_code
         self.code = self.compiler.compile(hight_level_code)
+
+    def leer_input(self, input_leido):
+        self.input.set_input(input_leido)
+        return self.input.get_input()
