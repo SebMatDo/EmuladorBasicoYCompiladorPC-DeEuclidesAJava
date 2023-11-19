@@ -16,7 +16,6 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
     #Actualiza el estado de la máquina que se muestra con la máquina emulada
     def updateStateMachine(self):
         for window in self.machine.windows:
-            window.machine.leer_input(window.textEditInput.toPlainText())
             [window.table_ram.setItem(i, 0, QTableWidgetItem(window.machine.table_ram[i])) for i in range(0, 1024)]
             [window.table_registros.setItem(i, 0, QTableWidgetItem(window.machine.table_registros[i][0])) for i in range(0, 4)]
             [window.table_registros.setItem(i, 1, QTableWidgetItem(str(window.machine.table_registros[i][1]))) for i in range(0, 4)]
@@ -34,6 +33,9 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
                 self.textEditConsola.setTextCursor(cursor_console)
                 self.textEditConsola.ensureCursorVisible()
 
+    def leer_input(self):
+        for window in self.machine.windows:
+            window.machine.leer_input(window.textEditInput.toPlainText())
 
     def initializeAllInCeros(self):
         self.machine.initializeAllInCeros()
@@ -45,11 +47,13 @@ class Window(QMainWindow, pcDesigntaller.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_button_siguiente_instruccion_clicked(self):
+        self.leer_input()
         self.machine.siguiente_instruccion()
         self.updateStateMachine()
 
     @QtCore.pyqtSlot()
     def on_button_ultima_instruccion_clicked(self):
+        self.leer_input()
         self.machine.ultima_instruccion()
         self.updateStateMachine()
 

@@ -197,7 +197,7 @@ class Machine:
             case 'LeerIO':  # lee el input y lo guarda en el registro A
                 # Verifica si el valor en el input es un número
                 if not isNum(self.input.get_input()):
-                    print('ERROR: EL INPUT NO ES UN NUMERO, SE HA PUESTO UN 0')
+                    print('ERROR: El valor ingresado no es un número, se guardará un 0 y el resultado puede no ser el deseado')
                     self.table_registros[0][1] = '0'
                     self.table_registros[0][0] = '0000000000000000'
                 else:
@@ -205,7 +205,8 @@ class Machine:
                     self.table_registros[0][0] = decimalToBinary(int(self.table_registros[0][1]))
 
             case 'EscLetra':  # printea el registro A
-                print('Salida: ', chr(self.table_registros[0][1]))
+                if (chr(self.table_registros[0][1]) != '' and chr(self.table_registros[0][1]) != '\n'):
+                    print('Salida: ', chr(self.table_registros[0][1]))
 
 
         # actualiza la instruccion actual
