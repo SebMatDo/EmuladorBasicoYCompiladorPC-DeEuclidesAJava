@@ -16,7 +16,8 @@ class Assembler:
             r'(?P<Parar>Parar)|(?P<Cargar>Cargar%s,%s)|(?P<CargarValor>CargarValor%s,%s)|(?P<Almacenar>Almacenar%s,%s)|'
             r'(?P<SaltarSiCero>SaltarSiCero%s)|(?P<SaltarSiNeg>SaltarSiNeg%s)|(?P<SaltarSiPos>SaltarSiPos%s)|'
             r'(?P<SaltarSiDes>SaltarSiDes%s)|(?P<Saltar>Saltar%s)|(?P<Copiar>Copiar%s,%s)|(?P<Sumar>Sumar%s,%s)|'
-            r'(?P<Restar>Restar%s,%s)|(?P<Mult>Mult%s,%s)|(?P<Div>Div%s,%s)|(?P<Label>%s)|(?P<Escribir>Escribir)|(?P<LeerIO>LeerIO)' %
+            r'(?P<Restar>Restar%s,%s)|(?P<Mult>Mult%s,%s)|(?P<Div>Div%s,%s)|(?P<Label>%s)|'
+            r'(?P<Escribir>Escribir)|(?P<EscLetra>EscLetra)|(?P<LeerIO>LeerIO)'%
             (
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['variable'],
                 self.basic_regular_expresion['registro'], self.basic_regular_expresion['valor'],
@@ -172,6 +173,9 @@ class Assembler:
                 
                 case 'LeerIO':
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['LeerIO'] + '00'
+
+                case 'EscLetra':
+                    virtualMachine.object_code[linea] = virtualMachine.opcodes['EscLetra'] + '00'
 
                 case 'Parar':
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['Parar']

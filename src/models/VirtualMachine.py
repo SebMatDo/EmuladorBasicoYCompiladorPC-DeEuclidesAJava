@@ -26,7 +26,8 @@ class Machine:
             'Mult': '011000000011',
             'Div': '011000000100',
             'Escribir': '1111',
-            'LeerIO': '0111'
+            'LeerIO': '0111',
+            'EscLetra': '1110'
         }
         self.registers = {
             'A': '00',
@@ -202,6 +203,9 @@ class Machine:
                 else:
                     self.table_registros[0][1] = self.input.get_input()
                     self.table_registros[0][0] = decimalToBinary(int(self.table_registros[0][1]))
+
+            case 'EscLetra':  # printea el registro A
+                print('Salida: ', chr(self.table_registros[0][1]))
 
 
         # actualiza la instruccion actual

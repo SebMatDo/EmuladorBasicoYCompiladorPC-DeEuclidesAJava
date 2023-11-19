@@ -14,6 +14,7 @@ class MyLexer():
         print('Lexer destructor called.')
 
     lookUpTable = {}
+    stringTable = {}
 
     # Step 1: Lexer rules
 
@@ -139,12 +140,10 @@ class MyLexer():
     # A regular expression rule with some action code
     @lex.TOKEN(VERDADERO)
     def t_VERDADERO(self, t):
-        #t.value = True
         return t
 
     @lex.TOKEN(FALSO)
     def t_FALSO(self, t):
-        #t.value = False
         return t
 
     @lex.TOKEN(NUM_DECIMAL)
@@ -159,7 +158,6 @@ class MyLexer():
 
     @lex.TOKEN(VALOR_CADENA)
     def t_VALOR_CADENA(self, t):
-        t.value = [t.value, 'CADENA']
         return t
 
     @lex.TOKEN(ID)
