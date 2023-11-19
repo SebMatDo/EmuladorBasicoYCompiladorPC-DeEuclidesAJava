@@ -9,7 +9,7 @@ class LinkerLoader:
         self.spetialNums= r'\{(\d+)\}'
     
     # Función que se encarga de reemplazar las posiciones en memoria por su valor en binario no relativo sino exacto
-    def matchBinary(self ,match):
+    def matchBinary(self, match):
         return decimalToBinary(int(match.group(1))+self.startPoint)[2:]
 
     # Carga y actualiza la máquina para empezar a correr las instrucciones desde este punto

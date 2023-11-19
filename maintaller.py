@@ -13,13 +13,13 @@ instrucciones_asm = {}
 # Inicializar la máquina
 machine = Machine(code, instruccion_actual, instruccion_siguiente, use_console=True)
 
-#
-# data_folder = Path(os.getcwd())
-# file_path = data_folder / "tests/lexer/algoritmoPrueba.lp"
-# print(file_path)
-# data = open(file_path,'r').read()
-#
-# machine.compile(data)
+
+data_folder = Path(os.getcwd())
+file_path = data_folder / "tests/lexer/algoritmoPrueba.lp"
+print(file_path)
+data = open(file_path,'r').read()
+
+machine.compile(data)
 
 
 

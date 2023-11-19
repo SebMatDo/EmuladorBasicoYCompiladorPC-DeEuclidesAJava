@@ -13,7 +13,7 @@ class MyParser:
         self.lookUpTable = {}
         self.lexerLookUpTable = MyLexer.lookUpTable
         self.resultAsm = ''
-        self.countVar = 1
+        self.countVar = 11 # se inicia desde 11, porque la pos 0 se usa como cache de registros y las pos 1:10 se usan para un string
         self.lookUpJumps = {}
         self.countJumps = 1
 
@@ -88,11 +88,11 @@ class MyParser:
 
         # Si intenta usar una variable no inicializada manda error
         pseudoAsm = ''
+        esCadena = False;
         if self.lookUpTable.get(p[1]) is None:
             print('ERROR: Variable ' +  str(p[1]) + 'no inicializada siendo asignada')
         else:
             # todo verificacion de tipos
-
             # si es de tipo a = b hace esto
             # if p[3] == id
             if self.lexerLookUpTable.get(p[3]) is not None:
@@ -106,8 +106,25 @@ class MyParser:
             else: # if p[3] != id
                 # entonces esto es de tipo a = expresion
                 # ahora toca mirar si lo que llega es un asm o un factor.
-                pseudoAsm += p[3]
-            pseudoAsm += 'Almacenar A,' + str(self.lookUpTable[p[1]][1]) + '\n' #se almacena la variable en la ram. usando el lookup para obtener su numero especifico
+                if self.lookUpTable[p[1]][0] == 'cadena': # si es un string
+                    esCadena = True
+                    valorCadena = str(p[3]).replace('"','')
+                    # check len
+                    if len(valorCadena) > 10:
+                        print('ERROR: esta maquina está diseñada para soportar máximo 10 caracteres en una cadena \n se truncará el tamaño de la cadena a 10')
+                    for i in range(0, 10):
+                        if i < len(valorCadena):
+                            caracter = ord(valorCadena[i])
+                            pseudoAsm += 'CargarValor A,' + str(caracter) + '\n'
+                            pseudoAsm += 'Almacenar A,' + str(i+1) + '\n'
+                        else:
+                            pseudoAsm += 'CargarValor A, 0\n'
+                            pseudoAsm += 'Almacenar A,' + str(i+1) + '\n'
+                    # al final reporta esto
+                else:
+                    pseudoAsm += p[3]
+            if not esCadena:
+                pseudoAsm += 'Almacenar A,' + str(self.lookUpTable[p[1]][1]) + '\n' #se almacena la variable en la ram. usando el lookup para obtener su numero especifico
             p[0] = pseudoAsm
             #print('Parser: se identifica una asignacion\n', p[0])
 
@@ -128,7 +145,7 @@ class MyParser:
 
         p[0] = ''
         # mientras haya menos de 10 variables
-        if self.countVar <= 10:
+        if self.countVar <= 21:
             # Se guarda la variable en un diccionario haciendo referencia a su tipo y su numero de variable
             # si es una nueva var la cuenta, si no, la reemplaza
             if self.lookUpTable.get(p[2]) is None:
@@ -721,8 +738,13 @@ class MyParser:
         if self.lookUpTable.get(p[3]) is None:
             print('ERROR: Variable ' + str(p[3]) + 'no inicializada siendo leida')
         else:
-            pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
-            pseudoAsm += 'Escribir \n'
+            if self.lookUpTable.get(p[3])[0] != 'cadena':
+                pseudoAsm += 'Cargar A,' + str(self.lookUpTable.get(p[3])[1]) + '\n'
+                pseudoAsm += 'Escribir \n'
+            else:
+                for i in range(0,10):
+                    pseudoAsm += 'Cargar A,' + str(i+1) + '\n'
+                    pseudoAsm += 'EscLetra \n'
         p[0] = pseudoAsm
 
     def p_error(self,p):

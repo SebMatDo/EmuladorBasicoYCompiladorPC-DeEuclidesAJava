@@ -24,7 +24,9 @@ class Machine:
             'Restar': '011000000010',
             'Mult': '011000000011',
             'Div': '011000000100',
-            'Escribir': '1111'
+            'Escribir': '1111',
+            'EscLetra': '1110',
+
         }
         self.registers = {
             'A': '00',
@@ -189,6 +191,9 @@ class Machine:
 
             case 'Escribir':  # printea el registro A en decimal supongo
                 print('Salida: ', self.table_registros[0][1])
+
+            case 'EscLetra':  # printea el registro A
+                print('Salida: ', chr(self.table_registros[0][1]))
 
 
         # actualiza la instruccion actual
