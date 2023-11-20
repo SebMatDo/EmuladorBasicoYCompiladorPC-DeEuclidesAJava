@@ -229,6 +229,7 @@ class Machine:
         self.hight_level_code = ""
         self.instruccion_actual = 0
         self.instruccion_siguiente = 0
+        self.console.flush()
 
 
     def ensamblar(self, textEditCodigoASM):
