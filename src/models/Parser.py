@@ -48,11 +48,6 @@ class MyParser:
             pseudoAsm += 'Parar'
         self.resultAsm = pseudoAsm
 
-    def p_empty(self,p):
-        # funcion para poder tener un lambda en el resto de producciones
-        'empty :'
-        p[0] = ''
-        pass
 
     def p_proposicion(self,p):
         # todo casos (match), hacer_mientras (funciona mal) para (for)

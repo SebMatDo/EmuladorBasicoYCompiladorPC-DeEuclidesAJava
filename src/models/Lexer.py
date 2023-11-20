@@ -36,7 +36,6 @@ class MyLexer():
         'CASO',
         'HACER',
         'FFUN',
-        'MOD',
         'PCOMA',  # Semicolon
         'COLON',
         'ENTERO',
@@ -69,7 +68,6 @@ class MyLexer():
         'caso': 'CASO',
         'hacer': 'HACER',
         'ffun': 'FFUN',
-        'mod': 'MOD',
         'var': 'VAR',
         'entero': 'ENTERO',
         'booleano': 'BOOLEANO',
@@ -100,7 +98,6 @@ class MyLexer():
     t_CASO = r'caso'
     t_HACER = r'hacer'
     t_FFUN = r'ffun'
-    t_MOD = r'mod'
     t_SUMA = r'\+'
     t_RESTA = r'-'
     t_MULT = r'\*'
