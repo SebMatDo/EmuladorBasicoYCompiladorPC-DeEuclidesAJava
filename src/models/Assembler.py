@@ -172,7 +172,6 @@ class Assembler:
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['Escribir'] + '00'
                 
                 case 'LeerIO':
-                    print("LeerIO")
                     values = statement.group().replace('LeerIO', '').split(',')
                     registro = values[0]
                     virtualMachine.object_code[linea] = virtualMachine.opcodes['LeerIO'] + (virtualMachine.registers[registro] if registro != '' else '')
