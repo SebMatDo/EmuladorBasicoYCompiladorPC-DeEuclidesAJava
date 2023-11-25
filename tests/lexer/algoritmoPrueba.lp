@@ -58,3 +58,9 @@ mientras (a > 0) hacer
 fmientras;
 escribir(factorial);
 ffun
+
+fun
+    var a : cadena;
+    leer(a);
+    escribir(a);
+ffun

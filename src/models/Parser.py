@@ -142,7 +142,7 @@ class MyParser:
 
         p[0] = ''
         # mientras haya menos de 10 variables
-        if self.countVar <= 21:
+        if self.countVar <= 51:
             # Se guarda la variable en un diccionario haciendo referencia a su tipo y su numero de variable
             # si es una nueva var la cuenta, si no, la reemplaza
             if self.lookUpTable.get(p[2]) is None:
