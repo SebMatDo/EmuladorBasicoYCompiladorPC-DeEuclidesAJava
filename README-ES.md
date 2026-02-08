@@ -4,6 +4,8 @@ Un simulador educativo de PC Turing-completo con compilador integrado de lenguaj
 
 ## 📚 Descripción General
 
+**Desarrollado para la Universidad Nacional de Colombia**
+
 **PCPENA** (Simulador PC Simplificado) es una herramienta educativa interactiva que permite a los estudiantes:
 - Escribir y compilar programas en lenguaje de alto nivel
 - Observar el proceso de análisis léxico y tokenización usando PLY (Python Lex-Yacc)
@@ -147,6 +149,20 @@ Sumar A, B            // Sumar: A = A + B (8)
 Almacenar A, 100      // Almacenar en dirección 100
 Parar                 // Detener
 ```
+
+## 📸 Capturas de Pantalla
+
+Aquí hay algunos ejemplos del simulador en acción:
+
+![Captura 1](screenshots/example1.png)
+![Captura 2](screenshots/example2.png)
+
+## 🎥 Ejemplo en Video
+
+Vea una demostración completa de PCPENA en acción:
+
+[![Demo PCPENA](https://img.youtube.com/vi/RNxGJ1oT91E/0.jpg)](https://youtu.be/RNxGJ1oT91E)
+
 
 
 ## 📋 Sintaxis del Lenguaje de Alto Nivel
